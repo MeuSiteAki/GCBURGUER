@@ -506,7 +506,7 @@ let carrinho = [];
 let itemSelecionado = null;
 let statusEstoque = {};
 
-// NOVO: Descrições dos produtos
+// NOVO: Descrições dos produtos | Usa o nome do item como um ID
 const descricoes = {
     'Misto': 'Pão de forma, queijo e presunto',
     'X-Tudo': 'Carne artesanal 100g, queijo, ovo, presunto, salsicha, tomate, alface, molho, milho e batata palha',
@@ -514,7 +514,7 @@ const descricoes = {
     'Bacon Prime': 'Carne artesanal 120g, bacon crocante, queijo, presunto, tomate, alface e molho especial',
     'Cala-Bacon Prime': 'Carne artesanal 120g, calabresa, bacon crocante, queijo, tomate, alface e molho especial',
     'Imperador Duplo': '2 carnes artesanais 120g, queijo, presunto, ovo, tomate, alface e molho da casa',
-    'Combo Simples': 'X-Tudo + Batata P c/ bacon e cheddar + Mini pasteis + Calabresa + Refri Lata.',
+    'Barca Simples': 'X-Tudo + Batata P c/ bacon e cheddar + Mini pasteis + Calabresa + Refri Lata.',
     'Combo Classico': 'Bacon prime + Batata P + Refri Lata.',
     'Super Combo': 'X-Tudo + Batata 200g + Refri Lata.',
     'Combo Casal': '2 X-Tudo + Batata G + Refri 1L',
@@ -617,6 +617,8 @@ async function inicializarApp() {
                 { categoria: 'bebidas', nome: 'Suco 500ml', preco: 10.00, img: 'suc.jpg' },
                 { categoria: 'bebidas', nome: 'Vitamina 300ml', preco: 11.00, img: 'vit.webp' },
                 { categoria: 'bebidas', nome: 'Vitamina 500ml', preco: 13.00, img: 'vit.webp' },
+                { categoria: 'bebidas', nome: 'Jarra de Suco', preco: 20.00, img: 'jarra.jpg' },
+                { categoria: 'bebidas', nome: 'Jarra de Vitamina', preco: 25.00, img: 'jarra.jpg' },
                 { categoria: 'açaí', nome: 'Açaí 300ml', preco: 11.00, img: 'acai.jpg' },
                 { categoria: 'açaí', nome: 'Açaí 400ml', preco: 13.00, img: 'acai.jpg' },
                 { categoria: 'açaí', nome: 'Açaí 500ml', preco: 15.00, img: 'acai.jpg' },
