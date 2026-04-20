@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GC BURGUER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --dark: #0f0f0f;
+            --rustic: #2d1e14;
+            --gold: #e67e22;
+            --white: #f4f4f4;
+            --green: #25d366;
+            --gray: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: var(--dark);
+            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        header { 
+            text-align: center; 
+            padding: 40px 20px; 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.6));
+            border-bottom: 3px solid var(--gold);
+        }
+        header h1 { font-size: 1.8rem; letter-spacing: 2px; color: var(--gold); }
+
+        .tabs { 
+            display: flex; justify-content: center; gap: 15px; 
+            position: sticky; top: 0; z-index: 100; 
+            background: rgba(15, 15, 15, 0.95); padding: 15px;
+            backdrop-filter: blur(5px);
+        }
+        .tab-btn {
+            padding: 10px 25px; border: 2px solid var(--gold); background: transparent;
+            color: var(--gold); border-radius: 25px; cursor: pointer; font-weight: 800;
+            transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn.active { background: var(--gold); color: white; box-shadow: 0 0 15px rgba(230, 126, 34, 0.4); }
+
+        .container {
+            display: grid; grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; padding: 15px; max-width: 1100px; margin: auto;
+        }
+        @media (min-width: 768px) { .container { grid-template-columns: repeat(3, 1fr); } }
+
+        .card { 
+            background: var(--rustic); border-radius: 15px; overflow: hidden; 
+            display: flex; flex-direction: column; border: 1px solid #444;
+        }
+        .card img { width: 100%; height: 140px; object-fit: cover; border-bottom: 2px solid var(--gold); }
+        .card-info { padding: 12px; flex-grow: 1; text-align: center; }
+        .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; height: 40px; overflow: hidden; }
+        /* NOVO: descrição do item no card */
+        .card-desc { font-size: 0.7rem; color: #aaa; margin-bottom: 8px; font-style: italic; line-height: 1.3; }
+        .card-price { color: var(--gold); font-weight: 800; font-size: 1.1rem; }
+        .btn-add { 
+            background: var(--gold); border: none; color: white; width: 100%; 
+            padding: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-add:active { transform: scale(0.95); }
+
+        .cart-sidebar {
+            position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%;
+            background: #151515; z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+        }
+        .cart-sidebar.open { right: 0; }
+        .cart-header { padding: 20px; background: var(--rustic); display: flex; justify-content: space-between; align-items: center; }
+        
+        #cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { 
+            background: #222; padding: 12px; border-radius: 10px; margin-bottom: 10px;
+            border-left: 4px solid var(--gold); position: relative;
+        }
+        .cart-item-header { display: flex; justify-content: space-between; font-weight: bold; }
+        .cart-item-detail { font-size: 0.8rem; color: #aaa; margin-top: 5px; font-style: italic; }
+        /* NOVO: controles de quantidade no carrinho */
+        .cart-item-qty {
+            display: flex; align-items: center; gap: 8px; margin-top: 8px;
+        }
+        .qty-btn {
+            background: var(--gold); border: none; color: white; width: 28px; height: 28px;
+            border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .qty-btn:active { transform: scale(0.9); }
+        .qty-num { font-weight: bold; font-size: 0.95rem; min-width: 20px; text-align: center; }
+
+        .cart-footer { padding: 10px 14px; background: #1a1a1a; border-top: 2px solid var(--gold); }
+       .campo { margin-bottom: 5px; }
+.campo label { font-size: 0.75rem; color: var(--gold); font-weight: bold; text-transform: uppercase; margin-left: 5px; }
+.campo input, .campo select { 
+    width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid #444; 
+    background: #000; color: white; margin-top: 2px; font-size: 0.85rem;
+}
+
+        /* NOVO: radio entrega/retirada */
+       .entrega-opcoes {
+    display: flex; gap: 8px; margin-bottom: 6px;
+}
+.entrega-opcao {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 7px; border: 2px solid #444; border-radius: 10px; cursor: pointer;
+    transition: 0.2s; font-size: 0.8rem; font-weight: bold;
+}
+        .entrega-opcao input[type="radio"] { accent-color: var(--gold); width: 16px; height: 16px; }
+        .entrega-opcao.selecionada { border-color: var(--gold); color: var(--gold); background: rgba(230,126,34,0.1); }
+
+        .btn-float {
+            position: fixed; bottom: 30px; right: 20px;
+            background: var(--gold); width: 65px; height: 65px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; z-index: 99; 
+            cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        #cart-count {
+            position: absolute; top: 0; right: 0; background: #e74c3c;
+            color: white; border-radius: 50%; padding: 4px 8px; font-size: 0.8rem; font-weight: bold;
+        }
+
+        #toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: var(--green); color: white; padding: 12px 25px; border-radius: 50px;
+            z-index: 2000; display: none; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1500; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #222; padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; border: 1px solid var(--gold); }
+        .btn-confirm { background: var(--green); color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+
+        #pix-copia { word-break: break-all; height: 80px; resize: none; font-size: 0.8rem; }
+
+        footer { padding: 40px 20px; text-align: center; background: #000; margin-top: 50px; }
+        .social-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; }
+        .social-links a { color: var(--gold); font-size: 1.5rem; transition: 0.3s; }
+        .social-links a:hover { color: white; transform: translateY(-3px); }
+
+        .hidden { display: none; }
+
+        /* NOVO: botões de quantidade nos adicionais */
+        .extra-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 0; border-bottom: 1px solid #1a1a1a;
+        }
+        .extra-row:last-child { border-bottom: none; }
+        .extra-nome { font-size: 0.85rem; flex: 1; }
+        .extra-preco { font-size: 0.8rem; color: #aaa; margin: 0 10px; }
+        .extra-controle { display: flex; align-items: center; gap: 8px; }
+        .extra-qty-btn {
+            background: var(--gold); border: none; color: white; width: 26px; height: 26px;
+            border-radius: 50%; cursor: pointer; font-size: 1rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .extra-qty-btn.minus { background: #444; }
+        .extra-qty-btn:active { transform: scale(0.9); }
+        .extra-qty-num { font-weight: bold; font-size: 0.9rem; min-width: 18px; text-align: center; }
+
+        .tabs-grid {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            flex-wrap: nowrap;
+        }
+        @media (max-width: 600px) {
+            .tabs-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                padding: 10px;
+            }
+            .tab-btn {
+                width: 100%;
+                font-size: 0.7rem;
+                padding: 10px 5px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .tab-btn i { font-size: 1.1rem; }
+        }
+        .status-aberto {
+            color: #6dffaa;
+            text-shadow: 0 0 5px #2ecc71, 0 0 10px #2ecc71;
+            animation: neon-green 1.5s ease-in-out infinite alternate;
+        }
+        .status-fechado {
+            color: #e74c3c;
+            text-shadow: 0 0 5px #e74c3c, 0 0 10px #e74c3c;
+        }
+        @keyframes neon-green {
+            from { opacity: 0.8; }
+            to { opacity: 1; text-shadow: 0 0 10px #2ecc71, 0 0 20px #2ecc71; }
+        }
+        .logo-animada {
+            width: 200px;
+            border-radius: 100px;
+            animation: pulsa-brasa 5s infinite ease-in-out;
+        }
+        @keyframes pulsa-brasa {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 5px rgba(201, 151, 58, 0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(201, 151, 58, 0.6); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast"><i class="fas fa-check-circle"></i> Adicionado com sucesso!</div>
+
+<header>
+    <img class="logo-animada" src="GC BURGUER.png" alt="Logo GC Burguer">
+</header>
+<div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
+
+<script>
+function verificarStatusLoja() {
+    const agora = new Date();
+    const hora = agora.getHours();
+    const statusDiv = document.getElementById('status-loja');
+    const btnFinalizar = document.getElementById('btn-finalizar-checkout');
+    const estaAberto = hora >= 18 && hora <= 23;
+    if (estaAberto) {
+        statusDiv.innerHTML = '<span class="status-aberto">● ABERTO AGORA</span>';
+        if(btnFinalizar) btnFinalizar.disabled = false;
+    } else {
+        statusDiv.innerHTML = '<span class="status-fechado">● FECHADO (Abre às 18:00)</span>';
+        if(btnFinalizar) {
+            btnFinalizar.disabled = true;
+            btnFinalizar.innerText = "LOJA FECHADA NO MOMENTO";
+            btnFinalizar.style.background = "#444";
+        }
+    }
+}
+verificarStatusLoja();
+setInterval(verificarStatusLoja, 60000);
+</script>
+
+<div style="padding: 10px 15px;">
+    <div style="position: relative; background: #111; border-radius: 25px; padding: 5px 15px; border: 1px solid #333;">
+        <i class="fas fa-search" style="color: var(--gold); margin-right: 10px;"></i>
+        <input type="text" id="input-busca" placeholder="O que vamos comer hoje?" 
+               onkeyup="buscarProdutos()"
+               style="background: transparent; border: none; color: white; width: 85%; padding: 8px; outline: none;">
+    </div>
+</div>
+
+<div class="tabs tabs-grid" id="menu-tabs">
+    <button class="tab-btn active" onclick="filterMenu('hamburgueres')">BURGERS</button>
+    <button class="tab-btn" onclick="filterMenu('combos')">COMBOS</button>
+    <button class="tab-btn" onclick="filterMenu('pastéis')">PASTÉIS</button>
+    <button class="tab-btn" onclick="filterMenu('batatas')">BATATAS</button>
+    <button class="tab-btn" onclick="filterMenu('bebidas')">BEBIDAS</button>
+    <button class="tab-btn" onclick="filterMenu('açaí')">AÇAÍ</button>
+</div>
+<i style="font-size: 10px;">*Imagens meramente ilustrativas</i>
+<div class="container" id="menu-container"></div>
+
+<div class="btn-float" onclick="toggleCart()">
+    <i class="fas fa-shopping-basket" style="color: white; font-size: 1.8rem;"></i>
+    <span id="cart-count">0</span>
+</div>
+
+<!-- MODAL PRODUTO -->
+<div class="modal" id="modal-produto">
+    <div class="modal-content">
+        <h3 id="modal-nome" style="color:var(--gold); margin-bottom:5px;">Nome do Produto</h3>
+        <p id="modal-desc" style="font-size:0.8rem; color:#aaa; font-style:italic; margin-bottom:15px;"></p>
+        
+        <button onclick="toggleExtras()" style="background:none; border: 1px dashed var(--gold); color:var(--gold); padding:12px; width:100%; cursor:pointer; border-radius:8px;">
+            <i class="fas fa-plus-circle"></i> ADICIONAIS:
+        </button>
+        
+        <div id="extras-section" class="hidden" style="margin-top:15px; background: #111; padding: 10px; border-radius: 8px; max-height: 250px; overflow-y: auto;">
+    
+            <div id="extras-lanches">
+                <p style="color:var(--gold); font-size:0.75rem; font-weight:bold; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">ADICIONAIS SALGADOS:</p>
+                <!-- NOVO: cada adicional com botão + e - -->
+                <div class="extra-row"><span class="extra-nome">Carne Artesanal</span><span class="extra-preco">+R$8,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="8.00" data-name="Carne Artesanal">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Geléia Premium</span><span class="extra-preco">+R$6,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="6.00" data-name="Geléia Premium">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Bacon</span><span class="extra-preco">+R$5,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="5.00" data-name="Bacon">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Calabresa</span><span class="extra-preco">+R$4,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="4.00" data-name="Calabresa">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Abacaxi</span><span class="extra-preco">+R$4,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="4.00" data-name="Abacaxi">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Queijo</span><span class="extra-preco">+R$3,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="3.00" data-name="Queijo">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Ovo</span><span class="extra-preco">+R$3,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="3.00" data-name="Ovo">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Creme de Cheddar</span><span class="extra-preco">+R$3,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="3.00" data-name="Creme de Cheddar">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Cebola</span><span class="extra-preco">+R$3,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="3.00" data-name="Cebola">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Presunto</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Presunto">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Salsicha</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Salsicha">+</button></div></div>
+            </div>
+
+            <div id="extras-acai" class="hidden">
+                <p style="color:var(--gold); font-size:0.75rem; font-weight:bold; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">FRUTAS E COMPLEMENTOS (R$ 2,00 cada):</p>
+                <div class="extra-row"><span class="extra-nome">Banana</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Banana">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Morango</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Morango">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Kiwi</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Kiwi">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Uva</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Uva">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Leite Condensado</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Leite Condensado">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Disquete</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Disquete">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Amendoim</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Amendoim">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Leite em Pó</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Leite em Pó">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Tapioca</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Tapioca">+</button></div></div>
+                <div class="extra-row"><span class="extra-nome">Granola</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Granola">+</button></div></div>
+            </div>
+        </div>
+<div id="extras-acai" class="hidden">
+   </div>
+
+<div id="extras-bebidas" class="hidden" style="margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
+    <p id="titulo-sabores" style="color:var(--gold); font-weight:bold; margin-bottom:10px;">Escolha o sabor:</p>
+    
+    <div id="container-opcoes-sabores" style="display: flex; flex-direction: column; gap: 10px;">
+    </div>
+</div>
+        <div class="campo" style="margin-top:20px;">
+            <label><i class="fas fa-comment-dots"></i> Observação / O que retirar?</label>
+            <input type="text" id="modal-obs" placeholder="Ex: Tirar cebola, ponto da carne...">
+        </div>
+
+        <button class="btn-confirm" onclick="confirmarAdicao()">ADICIONAR AO PEDIDO</button>
+        <button onclick="fecharModal()" style="width:100%; background:none; border:none; color:gray; margin-top:15px; cursor:pointer;">Voltar</button>
+    </div>
+</div>
+
+<!-- MODAL PIX -->
+<div class="modal" id="modal-pix">
+  <div class="modal-content">
+    <h3 style="color:var(--gold); margin-bottom:15px; text-align:center;">Pagamento via PIX</h3>
+    <div id="pix-qrcode" style="text-align:center; margin-bottom:15px; background: white; padding: 10px; display: inline-block; width: 100%;"></div>
+    <p style="font-size:0.8rem; color:var(--gold); margin-bottom:5px;">Código Copia e Cola:</p>
+    <textarea id="pix-copia" readonly></textarea>
+    <p style="margin-top:10px; font-size:0.9rem; color:#ccc;">
+      Valor Total: <span id="pix-valor" style="font-weight:bold; color:white;"></span><br>
+      Chave: 5599992166621<br>
+      Favorecido: Gabriel Costa Gomes    99992247546
+    </p>
+    <button onclick="fecharPix()" style="margin-top:15px; width:100%; background:var(--gold); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">CONTINUE O PEDIDO:</button>
+  </div>
+</div>
+
+<!-- CARRINHO -->
+<div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+        <h3><i class="fas fa-shopping-cart"></i> Meu Carrinho</h3>
+        <i class="fas fa-times" onclick="toggleCart()" style="font-size: 1.5rem; cursor:pointer"></i>
+    </div>
+    
+    <div id="cart-items"></div>
+
+    <div class="cart-footer">
+        <!-- NOVO: Radio Entrega / Retirada -->
+        <div class="entrega-opcoes">
+            <label class="entrega-opcao selecionada" id="label-entrega">
+                <input type="radio" name="tipo-pedido" value="entrega" checked onchange="alternarTipoPedido('entrega')">
+                <i class="fas fa-motorcycle"></i> ENTREGA
+            </label>
+            <label class="entrega-opcao" id="label-retirada">
+                <input type="radio" name="tipo-pedido" value="retirada" onchange="alternarTipoPedido('retirada')">
+                <i class="fas fa-store"></i> RETIRADA
+            </label>
+        </div>
+        <!-- formulario -->
+       <div class="campo">
+    <input type="text" id="nome" placeholder="Seu nome:">
+</div>
+<div class="campo">
+    <input type="tel" id="telefone" placeholder="Seu WhatsApp: (99) 99999-9999">
+</div>
+
+        <div id="campos-entrega">
+            <div class="campo">
+               <select id="bairro" onchange="atualizarInterface()">
+    <option value="" data-fee="0">Selecione seu Bairro *</option>
+    <option value="Ana Julia" data-fee="9">Ana Julia (R$ 9,00)</option>
+    <option value="Baixão" data-fee="8">Baixão (R$ 8,00)</option>
+    <option value="Barra Azul" data-fee="10">Barra Azul (R$ 10,00)</option>
+    <option value="Bela Vista" data-fee="9">Bela Vista (R$ 9,00)</option>
+    <option value="Boa Vista" data-fee="6">Boa Vista (R$ 6,00)</option>
+    <option value="Bom Jardim" data-fee="7">Bom Jardim (R$ 7,00)</option>
+    <option value="Bom Jardim de baixo" data-fee="8">Bom Jardim de baixo (R$ 8,00)</option>
+    <option value="Brasil Novo" data-fee="8">Brasil Novo (R$ 8,00)</option>
+    <option value="Capeloza" data-fee="7">Capeloza (R$ 7,00)</option>
+    <option value="Centro" data-fee="6">Centro (R$ 6,00)</option>
+    <option value="Cikel" data-fee="6">Cikel (R$ 6,00)</option>
+    <option value="Colinas Parque" data-fee="9">Colinas Parque (R$ 9,00)</option>
+    <option value="Dr. Gilson" data-fee="8">Dr. Gilson (R$ 8,00)</option>
+    <option value="Flavio Dino" data-fee="10">Flavio Dino (R$ 10,00)</option>
+    <option value="Gastão Vieira" data-fee="4">Gastão Vieira (R$ 4,00)</option>
+    <option value="Jacu" data-fee="7">Jacu (R$ 7,00)</option>
+    <option value="Jardim America" data-fee="7">Jardim America (R$ 7,00)</option>
+    <option value="Jardim Aulidia" data-fee="10">Jardim Aulidia (R$ 10,00)</option>
+    <option value="Jardim de Alah" data-fee="4">Jardim de Alah (R$ 4,00)</option>
+    <option value="Jardim Gloria" data-fee="5">Jardim Gloria (R$ 5,00)</option>
+    <option value="Jardim Gloria 2" data-fee="6">Jardim Gloria 2 (R$ 6,00)</option>
+    <option value="Jardim Gloria 3" data-fee="6">Jardim Gloria 3 (R$ 6,00)</option>
+    <option value="Jardim Gloria City" data-fee="6">Jardim Gloria City (R$ 6,00)</option>
+    <option value="João Paulo" data-fee="7">João Paulo (R$ 7,00)</option>
+    <option value="Juscelino" data-fee="9">Juscelino (R$ 9,00)</option>
+    <option value="Laranjeiras" data-fee="7">Laranjeiras (R$ 7,00)</option>
+    <option value="Monte Sinai" data-fee="8">Monte Sinai (R$ 8,00)</option>
+    <option value="Morante Imperial" data-fee="14">Morante Imperial (R$ 14,00)</option>
+    <option value="Nova Açailândia" data-fee="7">Nova Açailândia (R$ 7,00)</option>
+    <option value="Nova Açailândia 2" data-fee="7">Nova Açailândia 2 (R$ 7,00)</option>
+    <option value="Novo Horizonte" data-fee="16">Novo Horizonte (R$ 16,00)</option>
+    <option value="Ouro verde" data-fee="6">Ouro verde (R$ 6,00)</option>
+    <option value="Parque da Lagoa" data-fee="6">Parque da Lagoa (R$ 6,00)</option>
+    <option value="Parque das Nações" data-fee="9">Parque das Nações (R$ 9,00)</option>
+    <option value="Parque Jardins" data-fee="15">Parque Jardins (R$ 15,00)</option>
+    <option value="Parque Planalto" data-fee="6">Parque Planalto (R$ 6,00)</option>
+    <option value="Pequia" data-fee="25">Pequia (R$ 25,00)</option>
+    <option value="Plano da Serra" data-fee="19">Plano da Serra (R$ 19,00)</option>
+    <option value="Porto Belo" data-fee="12">Porto Belo (R$ 12,00)</option>
+    <option value="Porto Seguro" data-fee="10">Porto Seguro (R$ 10,00)</option>
+    <option value="Residencial Tropical" data-fee="8">Residencial Tropical (R$ 8,00)</option>
+    <option value="Sarney Filho" data-fee="4">Sarney Filho (R$ 4,00)</option>
+    <option value="Sunil" data-fee="8">Sunil (R$ 8,00)</option>
+    <option value="Tancredo" data-fee="6">Tancredo (R$ 6,00)</option>
+    <option value="Valle do Açai" data-fee="14">Valle do Açai (R$ 14,00)</option>
+    <option value="Vila Ildemar" data-fee="8">Vila Ildemar (R$ 8,00)</option>
+    <option value="Vila Ipiranga" data-fee="7">Vila Ipiranga (R$ 7,00)</option>
+    <option value="Vila Maranhão" data-fee="7">Vila Maranhão (R$ 7,00)</option>
+    <option value="Vila Progresso 2" data-fee="6">Vila Progresso 2 (R$ 6,00)</option>
+    <option value="Vila São Francisco" data-fee="7">Vila São Francisco (R$ 7,00)</option>
+    <option value="Vila Sucuri" data-fee="8">Vila Sucuri (R$ 8,00)</option>
+</select>
+            </div>
+            <div class="campo">
+                <input type="text" id="endereco" placeholder="Rua, número e referência">
+            </div>
+        </div>
+
+        <div class="campo">
+            <select id="pagamento" onchange="handlePagamento(this.value)">
+                <option>Forma de Pagamento:</option>
+                <option value="PIX">PIX (envie o comprovante)</option>
+                <option value="Cartão">Cartão (Levamos a maquininha)</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
+        </div>
+        <div class="campo hidden" id="campo-troco">
+            <input type="number" id="troco" placeholder="Troco para quanto?">
+        </div>
+
+        <div style="background:#000; padding:10px; border-radius:8px; margin: 10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#888;">
+                <span>Taxa de Entrega:</span>
+                <span id="taxa-entrega">R$ 0,00</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; color:var(--gold); margin-top:5px;">
+                <span>TOTAL:</span>
+                <span id="total-cart">R$ 0,00</span>
+            </div>
+        </div>
+
+        <button onclick="processarPedido()" style="background:var(--green); color:white; border:none; width:100%; padding:15px; border-radius:12px; font-weight:800; font-size:1rem; cursor:pointer;">
+            <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
+        </button>
+    </div>
+</div>
+
+<footer>
+    <div style="background: linear-gradient(135deg, #1a0f00, #2d1e14); border: 2px solid var(--gold); border-radius: 16px; padding: 20px; margin: 0 15px 25px; text-align: center;">
+        <p style="font-size: 1.3rem; font-weight: 900; color: var(--gold); letter-spacing: 1px;">🏆 CLUBE DE FIDELIDADE GC</p>
+        <p style="font-size: 0.85rem; color: #ccc; margin: 8px 0 4px;">A cada <strong style="color:var(--gold)">10 pedidos</strong>, você ganha um <strong style="color:white">lanche grátis!</strong></p>
+        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">Promoções exclusivas, sorteios e muito mais pra quem é cliente fiel 🔥</p>
+        <!-- <a href="https://wa.me/559992247546?text=Quero%20participar%20do%20Clube%20de%20Fidelidade%20GC!" 
+           style="background: var(--gold); color: white; padding: 10px 22px; border-radius: 25px; font-weight: 800; font-size: 0.85rem; text-decoration: none; display: inline-block;">
+            <i class="fab fa-whatsapp"></i> QUERO PARTICIPAR!
+        </a> -->
+    </div>
+    <div class="social-links">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="https://wa.me/559992247546"><i class="fab fa-whatsapp"></i></a>
+    </div>
+    <p style="font-size:0.8rem; color:#666;">© 2026 GC Burguer. Desenvolvido por Carlos Rocha.</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBBQTI4ziKYQn9OLA8cjLAwcal7gdBy8mk",
+    authDomain: "catalogo-c7700.firebaseapp.com",
+    projectId: "catalogo-c7700",
+    storageBucket: "catalogo-c7700.firebasestorage.app",
+    messagingSenderId: "668924901739",
+    appId: "1:668924901739:web:035c64ea31ac3d9da3742e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let cacheProdutos = [];
+let carrinho = [];
+let itemSelecionado = null;
+let statusEstoque = {};
+
+// NOVO: Descrições dos produtos
+const descricoes = {
+    'Misto': 'Pão de forma, queijo e presunto',
+    'X-Tudo': 'Carne artesanal 100g, queijo, ovo, presunto, salsicha, tomate, alface, molho, milho e batata palha',
+    'Calabresa Prime': 'Carne artesanal 120g, calabresa, queijo, presunto, tomate, alface, molho especial',
+    'Bacon Prime': 'Carne artesanal 120g, bacon crocante, queijo, presunto, tomate, alface e molho especial',
+    'Cala-Bacon Prime': 'Carne artesanal 120g, calabresa, bacon crocante, queijo, tomate, alface e molho especial',
+    'Imperador Duplo': '2 carnes artesanais 120g, queijo, presunto, ovo, tomate, alface e molho da casa',
+    'Combo Simples': 'X-Tudo + Batata P c/ bacon e cheddar + Mini pasteis + Calabresa + Refri Lata.',
+    'Combo Classico': 'Bacon prime + Batata P + Refri Lata.',
+    'Super Combo': 'X-Tudo + Batata 200g + Refri Lata.',
+    'Combo Casal': '2 X-Tudo + Batata G + Refri 1L',
+    'Super Barca GC': '2 X-Tudo + Batata G com bacon e cheddar + Mini Pasteis, Porção de calabreza + Refri 1L',
+    'Batata Simples P': 'Batata frita crocante  — porção pequena',
+    'Batata Simples G': 'Batata frita crocante  — porção grande',
+    'Batata c/ Bacon e Cheddar P': 'Batata frita com bacon crocante e cheddar — porção pequena',
+    'Batata c/ Bacon e Cheddar G': 'Batata frita com bacon crocante e cheddar — porção grande',
+    'Pastel de Carne': 'Massa crocante recheada com carne moída temperada',
+    'Pastel de Pizza': 'Massa crocante sabor pizza',
+    'Pastel de Frango': 'Massa crocante recheada com frango desfiado',
+    'Pastel Frango c/ Catupiry': 'Frango desfiado com catupiry cremoso',
+    'Pastel Frango c/ Queijo': 'Frango desfiado com queijo derretido',
+    'Pastel Calabresa c/ Queijo': 'Calabresa suculenta com queijo derretido',
+    'Pastel Carne c/ Queijo': 'Carne moída temperada com queijo derretido',
+    'Pastel de Queijo': 'Recheio generoso de queijo cremoso',
+    'Pastel Tudão': 'Carne, frango, calabresa, queijo — o completo!',
+    'Pastel Romeu e Julieta': 'Queijo com goiabada — o clássico brasileiro',
+    'Açaí 300ml': 'Açaí 300ml. Leite condensado, leite em pó, granola e tapioca',
+    'Açaí 400ml': 'Açaí 400ml. Leite condensado, leite em pó, granola e tapioca',
+    'Açaí 500ml': 'Açaí 500ml. Leite condensado, leite em pó, granola e tapioca',
+};
+
+// NOVO: alternar entrega/retirada
+window.alternarTipoPedido = (tipo) => {
+    const camposEntrega = document.getElementById('campos-entrega');
+    const labelEntrega = document.getElementById('label-entrega');
+    const labelRetirada = document.getElementById('label-retirada');
+    if (tipo === 'retirada') {
+        camposEntrega.classList.add('hidden');
+        labelEntrega.classList.remove('selecionada');
+        labelRetirada.classList.add('selecionada');
+    } else {
+        camposEntrega.classList.remove('hidden');
+        labelEntrega.classList.add('selecionada');
+        labelRetirada.classList.remove('selecionada');
+    }
+    atualizarInterface();
+};
+
+// NOVO: função para alterar qtd dos adicionais com botões +/-
+window.alterarExtra = (btn, delta) => {
+    const controle = btn.parentElement;
+    const numSpan = controle.querySelector('.extra-qty-num');
+    let qty = parseInt(numSpan.innerText) + delta;
+    if (qty < 0) qty = 0;
+    numSpan.innerText = qty;
+};
+
+function vigiarEstoque() {
+    onSnapshot(doc(db, "estoque", "disponibilidade"), (snapshot) => {
+        if (snapshot.exists()) {
+            statusEstoque = snapshot.data();
+            const btnAtivo = document.querySelector('.tab-btn.active');
+            const filtro = btnAtivo ? btnAtivo.getAttribute('onclick').match(/'([^']+)'/)[1] : 'hamburgueres';
+            renderMenu(filtro);
+        }
+    });
+}
+
+async function inicializarApp() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "produtos"));
+        querySnapshot.forEach(doc => cacheProdutos.push(doc.data()));
+        
+        if(cacheProdutos.length === 0) {
+            cacheProdutos = [
+                { categoria: 'hamburgueres', nome: 'Misto', preco: 5.00, img: 'mist.jpg' },
+                { categoria: 'hamburgueres', nome: 'X-Tudo', preco: 11.99, img: 'x-tudo.jpg' },
+                { categoria: 'hamburgueres', nome: 'Calabresa Prime', preco: 13.99, img: 'xcala.jpg' },
+                { categoria: 'hamburgueres', nome: 'Bacon Prime', preco: 15.99, img: 'x-bacon.jpg' },
+                { categoria: 'hamburgueres', nome: 'Cala-Bacon Prime', preco: 17.99, img: 'xcalas.jpg' },
+                { categoria: 'hamburgueres', nome: 'Imperador Duplo', preco: 19.99, img: 'xtud.jpg' },
+                { categoria: 'combos', nome: 'Combo Simples', preco: 0.00, img: 'c5.jpeg' },
+                { categoria: 'combos', nome: 'Super Combo', preco: 22.00, img: 'c1.jpeg' },
+                { categoria: 'combos', nome: 'Combo Classico', preco: 26.00, img: 'c2.jpeg' },
+                { categoria: 'combos', nome: 'Combo Casal', preco: 45.00, img: 'c3.jpeg' },
+                { categoria: 'combos', nome: 'Super Barca GC', preco: 60.00, img: 'c4.jpeg' },
+                { categoria: 'batatas', nome: 'Batata Simples P', preco: 10.00, img: 'batata.jpg' },
+                { categoria: 'batatas', nome: 'Batata Simples G', preco: 20.00, img: 'batata.jpg' },
+                { categoria: 'batatas', nome: 'Batata c/ Bacon e Cheddar P', preco: 13.00, img: 'batataq.jpg' },
+                { categoria: 'batatas', nome: 'Batata c/ Bacon e Cheddar G', preco: 23.00, img: 'batataq.jpg' },
+                { categoria: 'pastéis', nome: 'Pastel de Carne', preco: 8.00, img: 'pascar.webp' },
+                { categoria: 'pastéis', nome: 'Pastel de Pizza', preco: 8.00, img: 'paspiz.jpg' },
+                { categoria: 'pastéis', nome: 'Pastel de Frango', preco: 8.00, img: 'pasfr.webp' },
+                { categoria: 'pastéis', nome: 'Pastel Frango c/ Catupiry', preco: 9.00, img: 'pasfra.webp' },
+                { categoria: 'pastéis', nome: 'Pastel Frango c/ Queijo', preco: 9.00, img: 'pasfrq.webp' },
+                { categoria: 'pastéis', nome: 'Pastel Calabresa c/ Queijo', preco: 9.00, img: 'pascala.jpg' },
+                { categoria: 'pastéis', nome: 'Pastel Carne c/ Queijo', preco: 9.00, img: 'pascarq.jpg' },
+                { categoria: 'pastéis', nome: 'Pastel de Queijo', preco: 11.00, img: 'pasq.jpg' },
+                { categoria: 'pastéis', nome: 'Pastel Tudão', preco: 12.00, img: 'past.jpg' },
+                { categoria: 'pastéis', nome: 'Pastel Romeu e Julieta', preco: 10.00, img: 'pasro.jpg' },
+                { categoria: 'bebidas', nome: 'Refrigerante lata 220ml', preco: 4.00, img: 'refri220.jpg' },
+                { categoria: 'bebidas', nome: 'Refrigerante lata 350ml', preco: 5.00, img: 'refri350.jpg' },
+                { categoria: 'bebidas', nome: 'Refrigerante 1 litro', preco: 10.00, img: 'refri1.jpg' },
+                { categoria: 'bebidas', nome: 'Refrigerante 2 litros', preco: 15.00, img: 'refri2.jpg' },
+                { categoria: 'bebidas', nome: 'Agua sem gás', preco: 3.00, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400' },
+                { categoria: 'bebidas', nome: 'Agua com gás', preco: 4.00, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400' },
+                { categoria: 'bebidas', nome: 'Suco 300ml', preco: 8.00, img: 'suc.jpg' },
+                { categoria: 'bebidas', nome: 'Suco 500ml', preco: 10.00, img: 'suc.jpg' },
+                { categoria: 'bebidas', nome: 'Vitamina 300ml', preco: 11.00, img: 'vit.webp' },
+                { categoria: 'bebidas', nome: 'Vitamina 500ml', preco: 13.00, img: 'vit.webp' },
+                { categoria: 'açaí', nome: 'Açaí 300ml', preco: 11.00, img: 'acai.jpg' },
+                { categoria: 'açaí', nome: 'Açaí 400ml', preco: 13.00, img: 'acai.jpg' },
+                { categoria: 'açaí', nome: 'Açaí 500ml', preco: 15.00, img: 'acai.jpg' },
+            ];
+        }
+        
+        vigiarEstoque(); 
+        renderMenu('hamburgueres');
+    } catch (e) {
+        console.error("Erro:", e);
+    }
+}
+
+const gerarHTMLProduto = (p) => {
+    const idProduto = p.nome.toLowerCase().replace(/\s/g, '_');
+    const esgotado = statusEstoque[idProduto] === false;
+    const desc = descricoes[p.nome] || '';
+    
+    return `
+        <div class="card" style="${esgotado ? 'opacity: 0.6; filter: grayscale(0.8);' : ''}">
+            <img src="${p.img}">
+            <div class="card-info">
+                <p class="card-title">${p.nome} ${esgotado ? '<span style="color:#ff4d4d; font-size:0.7rem; display:block;">(ESGOTADO)</span>' : ''}</p>
+                ${desc ? `<p class="card-desc">${desc}</p>` : ''}
+                <p class="card-price">R$ ${p.preco.toFixed(2).replace('.', ',')}</p>
+            </div>
+            <button class="btn-add" 
+                ${esgotado ? 'disabled style="background: #444; cursor: not-allowed;"' : ''} 
+                onclick='abrirModal(${JSON.stringify(p)})'>
+                <i class="fas fa-plus"></i> ${esgotado ? 'ESGOTADO' : 'ADICIONAR'}
+            </button>
+        </div>
+    `;
+};
+
+window.renderMenu = (filtro) => {
+    const container = document.getElementById('menu-container');
+    const produtosFiltrados = cacheProdutos.filter(p => p.categoria === filtro);
+    container.innerHTML = produtosFiltrados.map(p => gerarHTMLProduto(p)).join('');
+};
+
+window.filterMenu = (cat) => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    renderMenu(cat);
+};
+
+window.buscarProdutos = () => {
+    const termo = document.getElementById('input-busca').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const container = document.getElementById('menu-container');
+    if (termo === "") {
+        const btnAtivo = document.querySelector('.tab-btn.active');
+        const cat = btnAtivo.getAttribute('onclick').match(/'([^']+)'/)[1];
+        renderMenu(cat);
+        return;
+    }
+    const resultados = cacheProdutos.filter(p => {
+        const nomeNorm = p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const catNorm = p.categoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return nomeNorm.includes(termo) || catNorm.includes(termo);
+    });
+    container.innerHTML = resultados.length > 0 
+        ? resultados.map(p => gerarHTMLProduto(p)).join('') 
+        : '<p style="color:gray; text-align:center; padding:20px; grid-column: 1/-1;">Nenhum produto encontrado...</p>';
+};
+
+window.abrirModal = (prod) => {
+    itemSelecionado = prod;
+    document.getElementById('modal-nome').innerText = prod.nome;
+    document.getElementById('modal-desc').innerText = descricoes[prod.nome] || '';
+    document.getElementById('modal-produto').style.display = 'flex';
+    document.getElementById('modal-obs').value = '';
+    
+    document.querySelectorAll('.extra-qty-num').forEach(n => n.innerText = '0');
+
+    const lanches = document.getElementById('extras-lanches');
+    const acai = document.getElementById('extras-acai');
+    const bebidas = document.getElementById('extras-bebidas');
+    const secaoExtras = document.getElementById('extras-section');
+    const containerSabores = document.getElementById('container-opcoes-sabores');
+    const tituloSabores = document.getElementById('titulo-sabores');
+
+    if (prod.categoria === 'bebidas') {
+        lanches.classList.add('hidden');
+        acai.classList.add('hidden');
+        bebidas.classList.remove('hidden');
+        secaoExtras.classList.remove('hidden');
+
+        let opcoesHTML = "";
+        const nomeProd = prod.nome.toLowerCase();
+
+        // Lógica de Sabores Dinâmicos
+        if (nomeProd.includes('suco') || nomeProd.includes('vitamina')) {
+            tituloSabores.innerText = "Escolha a fruta:";
+            const frutas = ["Acerola", "Goiaba", "Cajá", "Maracujá"];
+            opcoesHTML = frutas.map((f, i) => `
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="radio" name="sabor-bebida" value="${f}" ${i === 0 ? 'checked' : ''}> ${f}
+                </label>
+            `).join('');
+        } else if (nomeProd.includes('refrigerante')) {
+            tituloSabores.innerText = "Escolha o sabor:";
+            const refris = ["Coca-Cola", "Coca-Cola Zero", "Guaraná Antártica", "Fanta Laranja"];
+            opcoesHTML = refris.map((r, i) => `
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="radio" name="sabor-bebida" value="${r}" ${i === 0 ? 'checked' : ''}> ${r}
+                </label>
+            `).join('');
+        } else {
+            // Para água ou itens sem sabor específico, esconde a seção
+            bebidas.classList.add('hidden');
+        }
+        
+        containerSabores.innerHTML = opcoesHTML;
+
+    } else if (prod.categoria === 'açaí') {
+        lanches.classList.add('hidden');
+        acai.classList.remove('hidden');
+        bebidas.classList.add('hidden');
+    } else {
+        lanches.classList.remove('hidden');
+        acai.classList.add('hidden');
+        bebidas.classList.add('hidden');
+    }
+};
+
+window.fecharModal = () => document.getElementById('modal-produto').style.display = 'none';
+window.toggleExtras = () => document.getElementById('extras-section').classList.toggle('hidden');
+
+window.confirmarAdicao = () => {
+    let valorExtras = 0;
+    let extrasNomes = [];
+    let saborEscolhido = "";
+
+    // 1. CAPTURA DE DADOS POR CATEGORIA
+    if (itemSelecionado.categoria === 'bebidas') {
+        const inputSabor = document.querySelector('input[name="sabor-bebida"]:checked');
+        if (inputSabor) {
+            saborEscolhido = inputSabor.value;
+            // IMPORTANTE: Não damos push no extrasNomes aqui para não duplicar no visual do carrinho
+        }
+    } else {
+        // Se NÃO for bebida, faz a leitura normal dos contadores +/- (Lanches/Açaí)
+        document.querySelectorAll('.extra-row').forEach(row => {
+            const numSpan = row.querySelector('.extra-qty-num');
+            const btnPlus = row.querySelector('.extra-qty-btn:not(.minus)');
+            if (!numSpan || !btnPlus) return;
+            const qty = parseInt(numSpan.innerText);
+            if (qty > 0) {
+                const price = parseFloat(btnPlus.dataset.price);
+                const name = btnPlus.dataset.name;
+                valorExtras += price * qty;
+                extrasNomes.push(qty > 1 ? `${name} x${qty}` : name);
+            }
+        });
+    }
+
+    // 2. CRIAÇÃO DA CHAVE ÚNICA (Para agrupar itens iguais corretamente)
+    const observacaoManual = document.getElementById('modal-obs').value.trim();
+    // A chave precisa do sabor para não misturar uma Coca com uma Fanta no carrinho
+    const chave = itemSelecionado.nome + '|' + saborEscolhido + '|' + extrasNomes.join(',') + '|' + observacaoManual;
+    
+    // 3. MONTAGEM DA OBSERVAÇÃO (O que o servidor lê para imprimir)
+    let listaParaImpressao = [];
+    if (saborEscolhido) listaParaImpressao.push("Sabor: " + saborEscolhido);
+    if (observacaoManual) listaParaImpressao.push("Obs: " + observacaoManual);
+    
+    const obsFinalFormatada = listaParaImpressao.join(' | ');
+
+    // 4. LÓGICA DE AGRUPAMENTO NO CARRINHO
+    const existente = carrinho.find(i => i.chave === chave);
+    if (existente) {
+        existente.qty += 1;
+        existente.precoTotal = existente.qty * existente.precoUnitario;
+    } else {
+        carrinho.push({
+            chave,
+            nome: itemSelecionado.nome,
+            precoUnitario: itemSelecionado.preco + valorExtras,
+            precoTotal: itemSelecionado.preco + valorExtras,
+            qty: 1,
+            obs: obsFinalFormatada,        // Servidor lê aqui (Sabor: Coca | Obs: Sem gelo)
+            extras: extrasNomes.join(', ') // Carrinho mostra aqui (Bacon, Queijo)
+        });
+    }
+
+    // 5. FINALIZAÇÃO E LIMPEZA
+    atualizarInterface();
+    fecharModal();
+
+    // Feedback visual (Toast)
+    const t = document.getElementById('toast');
+    if(t) { 
+        t.style.display = 'block'; 
+        setTimeout(() => t.style.display = 'none', 2000); 
+    }
+
+    // Resetar campos do modal
+    document.querySelectorAll('.extra-qty-num').forEach(n => n.innerText = '0');
+    const radioPadrao = document.querySelector('input[name="sabor-bebida"][value="Coca-Cola"]');
+    if(radioPadrao) radioPadrao.checked = true;
+};
+
+window.atualizarInterface = () => {
+    const list = document.getElementById('cart-items');
+    const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
+    const bairroSelect = document.getElementById('bairro');
+    const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
+
+    list.innerHTML = '';
+    let subtotal = 0;
+
+    carrinho.forEach((item, index) => {
+        // NOVO: precoTotal é unitario * qty
+        item.precoTotal = item.precoUnitario * item.qty;
+        subtotal += item.precoTotal;
+        list.innerHTML += `
+            <div class="cart-item">
+                <div class="cart-item-header">
+                    <span>${item.nome}</span>
+                    <span>R$ ${item.precoTotal.toFixed(2).replace('.', ',')}</span>
+                </div>
+                ${item.extras ? `<div class="cart-item-detail">+ ${item.extras}</div>` : ''}
+                ${item.obs ? `<div class="cart-item-detail" style="color:#c9973a">Obs: ${item.obs}</div>` : ''}
+                <!-- NOVO: controles de qty no carrinho -->
+                <div class="cart-item-qty">
+                    <button class="qty-btn" onclick="alterarQtyCarrinho(${index}, -1)">−</button>
+                    <span class="qty-num">${item.qty}</span>
+                    <button class="qty-btn" onclick="alterarQtyCarrinho(${index}, 1)">+</button>
+                    <span style="font-size:0.75rem; color:#888; margin-left:4px;">× R$ ${item.precoUnitario.toFixed(2).replace('.', ',')}</span>
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById('cart-count').innerText = carrinho.reduce((s, i) => s + i.qty, 0);
+    const taxaTexto = document.getElementById('taxa-entrega');
+    if(taxaTexto) taxaTexto.innerText = (tipoSelecionado === 'retirada') ? 'GRÁTIS (Retirada)' : (taxaEntrega === 0 ? "GRÁTIS" : `R$ ${taxaEntrega.toFixed(2)}`);
+    document.getElementById('total-cart').innerText = `R$ ${(subtotal + taxaEntrega).toFixed(2).replace('.', ',')}`;
+};
+
+// NOVO: alterar quantidade diretamente no carrinho
+window.alterarQtyCarrinho = (index, delta) => {
+    carrinho[index].qty += delta;
+    if (carrinho[index].qty <= 0) carrinho.splice(index, 1);
+    atualizarInterface();
+};
+
+// MANTIDO: remover item (compatibilidade)
+window.removerItem = (index) => {
+    carrinho.splice(index, 1);
+    atualizarInterface();
+};
+
+function buildPixBRCode(key, name, city, amount) {
+    // AJUSTE AQUI: Se a chave começar com +, mantemos o +, senão limpamos tudo
+    const cleanKey = key.startsWith('+') ? '+' + key.replace(/\D/g, '') : key.replace(/\D/g, ''); 
+    
+    const valorFormatado = Number(amount).toFixed(2);
+    const f = (id, val) => { const value = String(val); return id + value.length.toString().padStart(2, '0') + value; };
+    const lim = (t, n) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9 ]/g, "").toUpperCase().substring(0, n);
+    
+    const gui = f("00", "BR.GOV.BCB.PIX");
+    const keyTlv = f("01", cleanKey); 
+    
+    let payload = "";
+    payload += f("00", "01"); 
+    payload += f("26", gui + keyTlv); 
+    payload += f("52", "0000"); 
+    payload += f("53", "986");  
+    payload += f("54", valorFormatado);
+    payload += f("58", "BR");
+    payload += f("59", lim(name, 25)); 
+    payload += f("60", lim(city, 15)); 
+    payload += f("62", f("05", "***")); 
+    payload += "6304"; 
+    
+    let crc = 0xFFFF;
+    for (let i = 0; i < payload.length; i++) {
+        crc ^= payload.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+            if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+            else crc <<= 1;
+            crc &= 0xFFFF;
+        }
+    }
+    return payload + crc.toString(16).toUpperCase().padStart(4, "0");
+}
+window.handlePagamento = (valor) => {
+    const campoTroco = document.getElementById('campo-troco');
+    if(campoTroco) campoTroco.classList.toggle('hidden', valor !== 'Dinheiro');
+    
+    if (valor === 'PIX') {
+        const subtotal = carrinho.reduce((acc, item) => acc + item.precoUnitario * item.qty, 0);
+        const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
+        const bairroSelect = document.getElementById('bairro');
+        const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
+        const totalNum = subtotal + taxaEntrega;
+        if (totalNum <= 0) { alert("🛒 Seu carrinho está vazio!"); return; }
+        document.getElementById('modal-pix').style.display = 'flex';
+        document.getElementById('pix-valor').innerText = `R$ ${totalNum.toFixed(2).replace('.', ',')}`;
+        setTimeout(() => {
+            const qrContainer = document.getElementById('pix-qrcode');
+            if (qrContainer) {
+                qrContainer.innerHTML = ""; 
+                const pixCode = buildPixBRCode("+5599992166621", "GABRIEL COSTA GOMES", "SANTANDER", totalNum);
+                document.getElementById('pix-copia').value = pixCode;
+                new QRCode(qrContainer, { text: pixCode, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
+            }
+        }, 300);
+    }
+};
+
+window.processarPedido = async () => {
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone')?.value?.trim() || '';
+    const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
+    const bairroSelect = document.getElementById('bairro');
+    const bairro = tipoSelecionado === 'retirada' ? 'Retirada no local' : bairroSelect.value;
+    const endereco = tipoSelecionado === 'retirada' ? 'Retirada no local' : document.getElementById('endereco').value.trim();
+    const pagamento = document.getElementById('pagamento').value;
+    const troco = document.getElementById('troco')?.value || "";
+
+    if(!nome) return alert("⚠️ Preencha seu nome!");
+    if(tipoSelecionado === 'entrega' && (!bairro || !endereco)) return alert("⚠️ Preencha Bairro e Endereço!");
+    if(carrinho.length === 0) return alert("🛒 Seu carrinho está vazio!");
+
+    const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
+    const subtotal = carrinho.reduce((s, i) => s + i.precoUnitario * i.qty, 0);
+    const totalNumerico = subtotal + taxaEntrega;
+
+    const itensNormalizados = carrinho.map(i => ({
+        nome: i.nome,
+        preco: i.precoUnitario,
+        qty: i.qty,
+        obs: i.obs || '',
+        extras: i.extras || ''
+    }));
+
+    const pedidoFirestore = {
+        cliente: nome,
+        telefone: telefone,
+        bairro,
+        endereco,
+        tipoPedido: tipoSelecionado,
+        pagamento,
+        troco,
+        itens: itensNormalizados,
+        taxaEntrega,
+        total: totalNumerico,
+        status: "pendente",
+        origem: "delivery",
+        data: serverTimestamp()
+    };
+
+    try {
+        await addDoc(collection(db, "pedidos"), pedidoFirestore);
+
+        let msg = `*🔥 NOVO PEDIDO - BURGER GC CASTROBAR*\n`;
+        msg += `*Tipo:* ${tipoSelecionado === 'retirada' ? '🏪 RETIRADA NO LOCAL' : '🛵 ENTREGA'}\n`;
+        msg += `------------------------------\n`;
+        carrinho.forEach(i => {
+            msg += `✅ *${i.nome}* ${i.qty > 1 ? `x${i.qty}` : ''}\n`;
+            if(i.extras) msg += `  _Adicionais: ${i.extras}_\n`;
+            if(i.obs)    msg += `  _Obs: ${i.obs}_\n`;
+            msg += `   Subtotal: R$ ${(i.precoUnitario * i.qty).toFixed(2).replace('.', ',')}\n\n`;
+        });
+        msg += `------------------------------\n`;
+        msg += `*Subtotal:* R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+        if (tipoSelecionado === 'entrega') msg += `*Taxa de Entrega:* R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`;
+        msg += `*TOTAL: R$ ${totalNumerico.toFixed(2).replace('.', ',')}*\n\n`;
+        msg += `*PAGAMENTO:* ${pagamento}\n`;
+        if(pagamento === 'Dinheiro' && troco) msg += `*TROCO PARA:* R$ ${troco}\n`;
+        msg += `------------------------------\n`;
+        msg += `*CLIENTE:* ${nome}\n`;
+        msg += `*TELEFONE:* ${telefone}\n`;
+        if (tipoSelecionado === 'entrega') {
+            msg += `*ENDEREÇO:* ${endereco}\n`;
+            msg += `*BAIRRO:* ${bairro}`;
+        } else {
+            msg += `*RETIRADA NO LOCAL*`;
+        }
+
+        window.open(`https://wa.me/5599991154876?text=${encodeURIComponent(msg)}`);
+
+        carrinho = [];
+        atualizarInterface();
+        document.getElementById('cart-sidebar').classList.remove('open');
+        fecharPix();
+
+        Swal.fire({
+            icon: 'success', title: 'Pedido Enviado!',
+            text: 'Seu pedido foi recebido!',
+            background: '#111', color: '#fff', confirmButtonColor: '#c9973a'
+        });
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao salvar pedido.");
+    }
+};
+
+window.fecharPix = () => document.getElementById('modal-pix').style.display = 'none';
+window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('open');
+
+inicializarApp();
+
+ // Bloqueios de segurança
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
+    if (e.key === 'F12') { e.preventDefault(); }
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.ctrlKey && event.shiftKey && event.key === 'I') { event.preventDefault(); }
+  });
+  document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+</script>
+</body>
+</html>
