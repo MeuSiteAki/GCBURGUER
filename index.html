@@ -224,23 +224,22 @@
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
 <script>
+// ⏰ CONFIGURAÇÃO DE HORÁRIO — edite aqui facilmente
+const HORARIO_ABERTURA = 18;  // 18 = 18:00
+const HORARIO_FECHAMENTO = 22; // 23 = até 23:59
+
 function verificarStatusLoja() {
     const agora = new Date();
     const hora = agora.getHours();
     const statusDiv = document.getElementById('status-loja');
-    const btnFinalizar = document.getElementById('btn-finalizar-checkout');
-    const estaAberto = hora >= 18 && hora <= 23;
+    const estaAberto = hora >= HORARIO_ABERTURA && hora <= HORARIO_FECHAMENTO;
+
     if (estaAberto) {
         statusDiv.innerHTML = '<span class="status-aberto">● ABERTO AGORA</span>';
-        if(btnFinalizar) btnFinalizar.disabled = false;
     } else {
-        statusDiv.innerHTML = '<span class="status-fechado">● FECHADO (Abre às 18:00)</span>';
-        if(btnFinalizar) {
-            btnFinalizar.disabled = true;
-            btnFinalizar.innerText = "LOJA FECHADA NO MOMENTO";
-            btnFinalizar.style.background = "#444";
-        }
+        statusDiv.innerHTML = `<span class="status-fechado">● FECHADO (Abre às ${HORARIO_ABERTURA}:00)</span>`;
     }
+    return estaAberto;
 }
 verificarStatusLoja();
 setInterval(verificarStatusLoja, 60000);
@@ -624,7 +623,7 @@ async function inicializarApp() {
                 { categoria: 'açaí', nome: 'Açaí 500ml', preco: 15.00, img: 'acai.jpg' },
             ];
         }
-        
+       
         vigiarEstoque(); 
         renderMenu('hamburgueres');
     } catch (e) {
@@ -1021,8 +1020,20 @@ window.processarPedido = async () => {
 };
 
 window.fecharPix = () => document.getElementById('modal-pix').style.display = 'none';
-window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('open');
-
+window.toggleCart = () => {
+    if (!verificarStatusLoja()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Estamos fechados!',
+            text: `Voltamos às ${HORARIO_ABERTURA}:00. Fique à vontade para ver o cardápio! 😊`,
+            background: '#111',
+            color: '#fff',
+            confirmButtonColor: '#c9973a'
+        });
+        return;
+    }
+    document.getElementById('cart-sidebar').classList.toggle('open');
+};
 inicializarApp();
 
  // Bloqueios de segurança
