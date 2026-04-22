@@ -976,7 +976,7 @@ window.processarPedido = async () => {
     try {
         await addDoc(collection(db, "pedidos"), pedidoFirestore);
 
-        let msg = `*🔥 NOVO PEDIDO - BURGER GC CASTROBAR*\n`;
+        let msg = `*🔥 NOVO PEDIDO - GC BURGUER *\n`;
         msg += `*Tipo:* ${tipoSelecionado === 'retirada' ? '🏪 RETIRADA NO LOCAL' : '🛵 ENTREGA'}\n`;
         msg += `------------------------------\n`;
         carrinho.forEach(i => {
