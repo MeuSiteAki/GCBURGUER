@@ -244,7 +244,13 @@ function verificarStatusLoja() {
 verificarStatusLoja();
 setInterval(verificarStatusLoja, 60000);
 </script>
-
+<!-- TELA DE LOJA FECHADA -->
+<div id="tela-fechada" style="display:none;position:fixed;inset:0;background:#080808;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:'Outfit',sans-serif;">
+    <div style="font-size:4rem;margin-bottom:16px;">🍔</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;color:#e8a930;font-size:2.5rem;letter-spacing:4px;margin:0 0 10px;">GC BURGUER</h1>
+    <p style="color:rgba(255,255,255,0.5);font-size:1.1rem;margin:0 0 8px;">Estamos fechados no momento.</p>
+    <p style="color:rgba(255,255,255,0.3);font-size:0.9rem;">Em breve voltamos! 🙏</p>
+</div>
 <div style="padding: 10px 15px;">
     <div style="position: relative; background: #111; border-radius: 25px; padding: 5px 15px; border: 1px solid #333;">
         <i class="fas fa-search" style="color: var(--gold); margin-right: 10px;"></i>
@@ -1036,6 +1042,27 @@ window.toggleCart = () => {
 };
 inicializarApp();
 
+
+// ── STATUS DA LOJA — TEMPO REAL ────────────────
+(async function() {
+    try {
+        const { getFirestore, doc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const { getApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+        const db = getFirestore(getApp());
+        onSnapshot(doc(db, 'config', 'loja'), (snap) => {
+            const aberta = snap.exists() ? snap.data().aberta !== false : true;
+            if (!aberta) {
+                document.getElementById('tela-fechada').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.getElementById('tela-fechada').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    } catch(e) {
+        console.log('Erro ao verificar status:', e.message);
+    }
+})();
  // Bloqueios de segurança
   document.addEventListener('keydown', function (e) {
     if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
