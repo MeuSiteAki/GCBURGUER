@@ -225,7 +225,7 @@
 
 <script>
 // ⏰ CONFIGURAÇÃO DE HORÁRIO — edite aqui facilmente
-const HORARIO_ABERTURA = 18;  // 18 = 18:00
+const HORARIO_ABERTURA = 11;  // 18 = 18:00
 const HORARIO_FECHAMENTO = 23; // 23 = até 23:59
 
 function verificarStatusLoja() {
@@ -445,16 +445,20 @@ setInterval(verificarStatusLoja, 60000);
         </div>
 
         <div class="campo">
-            <select id="pagamento" onchange="handlePagamento(this.value)">
-                <option>Forma de Pagamento:</option>
-                <option value="PIX">PIX (envie o comprovante)</option>
-                <option value="Cartão">Cartão (Levamos a maquininha)</option>
-                <option value="Dinheiro">Dinheiro</option>
-            </select>
-        </div>
-        <div class="campo hidden" id="campo-troco">
-            <input type="number" id="troco" placeholder="Troco para quanto?">
-        </div>
+            <b style="font-size: 12px;">Escolha até 2 formas de pagar:</b>
+    <select id="pagamento" onchange="handlePagamento(this.value)">
+        <option value="Forma de Pagamento:">Forma de Pagamento:</option>
+        <option value="PIX">PIX (envie o comprovante)</option>
+        <option value="Cartão">Cartão (Levamos a maquininha)</option>
+        <option value="Dinheiro">Dinheiro</option>
+    </select>
+</div>
+
+<div id="lista-pagamentos-carrinho" style="margin-bottom: 10px;"></div>
+
+<div class="campo hidden" id="campo-troco">
+    <input type="number" id="troco" placeholder="Troco para quanto?">
+</div>
 
         <div style="background:#000; padding:10px; border-radius:8px; margin: 10px 0;">
             <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#888;">
@@ -912,30 +916,135 @@ function buildPixBRCode(key, name, city, amount) {
     }
     return payload + crc.toString(16).toUpperCase().padStart(4, "0");
 }
-window.handlePagamento = (valor) => {
+// Variável global para armazenar os pagamentos parciais
+let pagamentosRealizados = [];
+
+window.handlePagamento = async (valor) => {
     const campoTroco = document.getElementById('campo-troco');
-    if(campoTroco) campoTroco.classList.toggle('hidden', valor !== 'Dinheiro');
+    const inputTroco = document.getElementById('troco');
+    const selectPagamento = document.getElementById('pagamento');
     
-    if (valor === 'PIX') {
-        const subtotal = carrinho.reduce((acc, item) => acc + item.precoUnitario * item.qty, 0);
-        const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
-        const bairroSelect = document.getElementById('bairro');
-        const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
-        const totalNum = subtotal + taxaEntrega;
-        if (totalNum <= 0) { alert("🛒 Seu carrinho está vazio!"); return; }
-        document.getElementById('modal-pix').style.display = 'flex';
-        document.getElementById('pix-valor').innerText = `R$ ${totalNum.toFixed(2).replace('.', ',')}`;
-        setTimeout(() => {
-            const qrContainer = document.getElementById('pix-qrcode');
-            if (qrContainer) {
-                qrContainer.innerHTML = ""; 
-                const pixCode = buildPixBRCode("+5599992166621", "GABRIEL COSTA GOMES", "SANTANDER", totalNum);
-                document.getElementById('pix-copia').value = pixCode;
-                new QRCode(qrContainer, { text: pixCode, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
-            }
-        }, 300);
+    if (valor === 'Forma de Pagamento:' || !valor) return;
+
+    // Calcular quanto ainda falta pagar
+    const subtotal = carrinho.reduce((acc, item) => acc + item.precoUnitario * item.qty, 0);
+    const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
+    const bairroSelect = document.getElementById('bairro');
+    const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex]?.dataset.fee || 0);
+    const totalPedido = subtotal + taxaEntrega;
+    
+    const jaPago = pagamentosRealizados.reduce((acc, p) => acc + p.valor, 0);
+    const restante = totalPedido - jaPago;
+
+    if (totalPedido <= 0) {
+        Swal.fire({ icon: 'warning', title: 'Carrinho Vazio', text: 'Adicione itens antes de selecionar o pagamento.', background: '#111', color: '#fff' });
+        if(selectPagamento) selectPagamento.value = 'Forma de Pagamento:';
+        return;
     }
+
+    if (restante <= 0.01) {
+        Swal.fire({ icon: 'info', title: 'Pedido Quitado', text: 'O valor total já foi atingido.', background: '#111', color: '#fff' });
+        if(selectPagamento) selectPagamento.value = 'Forma de Pagamento:';
+        return;
+    }
+
+    if (valor === 'Dinheiro') {
+        const { value: valorEntregue } = await Swal.fire({
+            title: 'Pagamento em Dinheiro',
+            text: `O valor a pagar é R$ ${restante.toFixed(2).replace('.', ',')}. Quanto você vai entregar?`,
+            input: 'number',
+            inputAttributes: { step: '0.01', min: restante.toFixed(2) },
+            showCancelButton: true,
+            confirmButtonColor: '#c9973a',
+            cancelButtonText: 'Cancelar',
+            background: '#111',
+            color: '#fff',
+            inputValidator: (value) => {
+                if (!value || parseFloat(value) < restante - 0.01) {
+                    return 'O valor deve ser igual ou maior que o total!';
+                }
+            }
+        });
+
+        if (valorEntregue) {
+            const valorNumEntregue = parseFloat(valorEntregue);
+            
+            // Adiciona o pagamento fixado no valor que faltava
+            pagamentosRealizados.push({ 
+                metodo: 'Dinheiro', 
+                valor: restante, 
+                entregue: valorNumEntregue 
+            });
+
+            // Se houver troco, preenche o campo e avisa o usuário
+            if (valorNumEntregue > restante) {
+                const valorTroco = valorNumEntregue - restante;
+                if(inputTroco) inputTroco.value = valorNumEntregue.toFixed(2);
+                if(campoTroco) campoTroco.classList.remove('hidden');
+                
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Troco Calculado',
+                    text: `Troco de R$ ${valorTroco.toFixed(2).replace('.', ',')}`,
+                    background: '#111',
+                    color: '#fff',
+                    confirmButtonColor: '#c9973a'
+                });
+            }
+        }
+    } else {
+        // Lógica para PIX e Cartão (Valor Exato)
+        const { value: valorInformado } = await Swal.fire({
+            title: `Pagar com ${valor}`,
+            text: `Valor: R$ ${restante.toFixed(2).replace('.', ',')}`,
+            input: 'number',
+            inputValue: restante.toFixed(2),
+            inputAttributes: { step: '0.01', min: '0.01' },
+            showCancelButton: true,
+            confirmButtonColor: '#c9973a',
+            cancelButtonText: 'Cancelar',
+            background: '#111',
+            color: '#fff'
+        });
+
+        if (valorInformado) {
+            const valorNum = parseFloat(valorInformado);
+            if (valorNum <= 0 || isNaN(valorNum)) return;
+
+            if (valorNum > (restante + 0.05)) {
+                Swal.fire({ icon: 'error', title: 'Valor Excedido', text: 'O valor informado é maior que o restante.', background: '#111', color: '#fff' });
+                return;
+            }
+
+            pagamentosRealizados.push({ metodo: valor, valor: valorNum });
+
+            if (valor === 'PIX') {
+                abrirModalPixMisto(valorNum);
+            }
+        }
+    }
+
+    // Atualiza visibilidade do campo de troco
+    const temDinheiro = pagamentosRealizados.some(p => p.metodo === 'Dinheiro');
+    if(campoTroco) campoTroco.classList.toggle('hidden', !temDinheiro);
+
+    if(typeof atualizarInterface === 'function') atualizarInterface();
+    if(selectPagamento) selectPagamento.value = 'Forma de Pagamento:';
 };
+
+function abrirModalPixMisto(valor) {
+    document.getElementById('modal-pix').style.display = 'flex';
+    document.getElementById('pix-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+    setTimeout(() => {
+        const qrContainer = document.getElementById('pix-qrcode');
+        if (qrContainer) {
+            qrContainer.innerHTML = ""; 
+            const pixCode = buildPixBRCode("+5599992166621", "GABRIEL COSTA GOMES", "SANTANDER", valor);
+            document.getElementById('pix-copia').value = pixCode;
+            new QRCode(qrContainer, { text: pixCode, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
+        }
+    }, 300);
+}
 
 window.processarPedido = async () => {
     const nome = document.getElementById('nome').value.trim();
@@ -944,24 +1053,29 @@ window.processarPedido = async () => {
     const bairroSelect = document.getElementById('bairro');
     const bairro = tipoSelecionado === 'retirada' ? 'Retirada no local' : bairroSelect.value;
     const endereco = tipoSelecionado === 'retirada' ? 'Retirada no local' : document.getElementById('endereco').value.trim();
-    const pagamento = document.getElementById('pagamento').value;
     const troco = document.getElementById('troco')?.value || "";
-
-    if(!nome) return alert("⚠️ Preencha seu nome!");
-    if(tipoSelecionado === 'entrega' && (!bairro || !endereco)) return alert("⚠️ Preencha Bairro e Endereço!");
-    if(carrinho.length === 0) return alert("🛒 Seu carrinho está vazio!");
 
     const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
     const subtotal = carrinho.reduce((s, i) => s + i.precoUnitario * i.qty, 0);
     const totalNumerico = subtotal + taxaEntrega;
+    const totalPago = pagamentosRealizados.reduce((acc, p) => acc + p.valor, 0);
 
-    const itensNormalizados = carrinho.map(i => ({
-        nome: i.nome,
-        preco: i.precoUnitario,
-        qty: i.qty,
-        obs: i.obs || '',
-        extras: i.extras || ''
-    }));
+    if(!nome || !telefone) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Nome e WhatsApp são obrigatórios!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
+    if(carrinho.length === 0) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Seu carrinho está vazio!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
+    
+    if (Math.abs(totalNumerico - totalPago) > 0.05) {
+        return Swal.fire({ icon:'warning', title:'Pagamento Incompleto', text:`Faltam R$ ${(totalNumerico - totalPago).toFixed(2).replace('.', ',')}`, background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
+    }
+
+    const resumoPagamento = pagamentosRealizados.map(p => `${p.metodo} (R$ ${p.valor.toFixed(2).replace('.', ',')})`).join(' + ');
+
+    // Cálculo de troco para o WhatsApp
+    const pagDinheiro = pagamentosRealizados.find(p => p.metodo === 'Dinheiro');
+    let infoTrocoWhats = "";
+    if (pagDinheiro && pagDinheiro.entregue > pagDinheiro.valor) {
+        const valorTroco = pagDinheiro.entregue - pagDinheiro.valor;
+        infoTrocoWhats = `\n*TROCO PARA:* R$ ${pagDinheiro.entregue.toFixed(2).replace('.', ',')} (Troco: R$ ${valorTroco.toFixed(2).replace('.', ',')})`;
+    }
 
     const pedidoFirestore = {
         cliente: nome,
@@ -969,9 +1083,9 @@ window.processarPedido = async () => {
         bairro,
         endereco,
         tipoPedido: tipoSelecionado,
-        pagamento,
-        troco,
-        itens: itensNormalizados,
+        pagamento: resumoPagamento,
+        troco: troco, // Valor "Troco para quanto?"
+        itens: carrinho.map(i => ({ nome: i.nome, preco: i.precoUnitario, qty: i.qty, obs: i.obs || '', extras: i.extras || '' })),
         taxaEntrega,
         total: totalNumerico,
         status: "pendente",
@@ -987,42 +1101,42 @@ window.processarPedido = async () => {
         msg += `------------------------------\n`;
         carrinho.forEach(i => {
             msg += `✅ *${i.nome}* ${i.qty > 1 ? `x${i.qty}` : ''}\n`;
-            if(i.extras) msg += `  _Adicionais: ${i.extras}_\n`;
-            if(i.obs)    msg += `  _Obs: ${i.obs}_\n`;
+            if(i.extras) msg += `   _Adicionais: ${i.extras}_\n`;
+            if(i.obs)    msg += `   _Obs: ${i.obs}_\n`;
             msg += `   Subtotal: R$ ${(i.precoUnitario * i.qty).toFixed(2).replace('.', ',')}\n\n`;
         });
         msg += `------------------------------\n`;
-        msg += `*Subtotal:* R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
-        if (tipoSelecionado === 'entrega') msg += `*Taxa de Entrega:* R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`;
         msg += `*TOTAL: R$ ${totalNumerico.toFixed(2).replace('.', ',')}*\n\n`;
-        msg += `*PAGAMENTO:* ${pagamento}\n`;
-        if(pagamento === 'Dinheiro' && troco) msg += `*TROCO PARA:* R$ ${troco}\n`;
-        msg += `------------------------------\n`;
+        msg += `*PAGAMENTO:* ${resumoPagamento}`;
+        msg += infoTrocoWhats; 
+        
+        msg += `\n------------------------------\n`;
         msg += `*CLIENTE:* ${nome}\n`;
         msg += `*TELEFONE:* ${telefone}\n`;
         if (tipoSelecionado === 'entrega') {
-            msg += `*ENDEREÇO:* ${endereco}\n`;
-            msg += `*BAIRRO:* ${bairro}`;
-        } else {
-            msg += `*RETIRADA NO LOCAL*`;
+            msg += `*ENDEREÇO:* ${endereco}\n*BAIRRO:* ${bairro}`;
         }
 
         window.open(`https://wa.me/5599991154876?text=${encodeURIComponent(msg)}`);
 
         carrinho = [];
+        pagamentosRealizados = [];
         atualizarInterface();
         document.getElementById('cart-sidebar').classList.remove('open');
         fecharPix();
-
-        Swal.fire({
-            icon: 'success', title: 'Pedido Enviado!',
-            text: 'Seu pedido foi recebido!',
-            background: '#111', color: '#fff', confirmButtonColor: '#c9973a'
-        });
+        Swal.fire({ icon: 'success', title: 'Pedido Enviado!', background: '#111', color: '#fff', confirmButtonColor: '#c9973a' });
     } catch (error) {
         console.error("Erro:", error);
-        alert("Erro ao salvar pedido.");
     }
+};
+
+// Função auxiliar para garantir o cálculo correto em qualquer parte do script
+function calcularTotalGeral() {
+    const subtotal = carrinho.reduce((s, i) => s + i.precoUnitario * i.qty, 0);
+    const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
+    const bairroSelect = document.getElementById('bairro');
+    const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
+    return subtotal + taxaEntrega;
 };
 
 window.fecharPix = () => document.getElementById('modal-pix').style.display = 'none';
