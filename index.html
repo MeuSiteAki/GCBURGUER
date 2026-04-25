@@ -1062,11 +1062,12 @@ window.processarPedido = async () => {
 
     if(!nome || !telefone) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Nome e WhatsApp são obrigatórios!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     if(carrinho.length === 0) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Seu carrinho está vazio!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
-    
+    if(tipoSelecionado === 'entrega' && !bairro) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Selecione seu bairro para calcular a taxa de entrega!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
+    if(tipoSelecionado === 'entrega' && !endereco) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Informe seu endereço completo!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
+
     if (Math.abs(totalNumerico - totalPago) > 0.05) {
         return Swal.fire({ icon:'warning', title:'Pagamento Incompleto', text:`Faltam R$ ${(totalNumerico - totalPago).toFixed(2).replace('.', ',')}`, background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     }
-
     const resumoPagamento = pagamentosRealizados.map(p => `${p.metodo} (R$ ${p.valor.toFixed(2).replace('.', ',')})`).join(' + ');
 
     // Cálculo de troco para o WhatsApp
