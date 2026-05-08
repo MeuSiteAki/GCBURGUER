@@ -61,7 +61,6 @@
         .card img { width: 100%; height: 140px; object-fit: cover; border-bottom: 2px solid var(--gold); }
         .card-info { padding: 12px; flex-grow: 1; text-align: center; }
         .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; height: 40px; overflow: hidden; }
-        /* NOVO: descrição do item no card */
         .card-desc { font-size: 0.7rem; color: #aaa; margin-bottom: 8px; font-style: italic; line-height: 1.3; }
         .card-price { color: var(--gold); font-weight: 800; font-size: 1.1rem; }
         .btn-add { 
@@ -85,7 +84,6 @@
         }
         .cart-item-header { display: flex; justify-content: space-between; font-weight: bold; }
         .cart-item-detail { font-size: 0.8rem; color: #aaa; margin-top: 5px; font-style: italic; }
-        /* NOVO: controles de quantidade no carrinho */
         .cart-item-qty {
             display: flex; align-items: center; gap: 8px; margin-top: 8px;
         }
@@ -98,22 +96,21 @@
         .qty-num { font-weight: bold; font-size: 0.95rem; min-width: 20px; text-align: center; }
 
         .cart-footer { padding: 10px 14px; background: #1a1a1a; border-top: 2px solid var(--gold); }
-       .campo { margin-bottom: 5px; }
-.campo label { font-size: 0.75rem; color: var(--gold); font-weight: bold; text-transform: uppercase; margin-left: 5px; }
-.campo input, .campo select { 
-    width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid #444; 
-    background: #000; color: white; margin-top: 2px; font-size: 0.85rem;
-}
+        .campo { margin-bottom: 5px; }
+        .campo label { font-size: 0.75rem; color: var(--gold); font-weight: bold; text-transform: uppercase; margin-left: 5px; }
+        .campo input, .campo select { 
+            width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid #444; 
+            background: #000; color: white; margin-top: 2px; font-size: 0.85rem;
+        }
 
-        /* NOVO: radio entrega/retirada */
-       .entrega-opcoes {
-    display: flex; gap: 8px; margin-bottom: 6px;
-}
-.entrega-opcao {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 7px; border: 2px solid #444; border-radius: 10px; cursor: pointer;
-    transition: 0.2s; font-size: 0.8rem; font-weight: bold;
-}
+        .entrega-opcoes {
+            display: flex; gap: 8px; margin-bottom: 6px;
+        }
+        .entrega-opcao {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 7px; border: 2px solid #444; border-radius: 10px; cursor: pointer;
+            transition: 0.2s; font-size: 0.8rem; font-weight: bold;
+        }
         .entrega-opcao input[type="radio"] { accent-color: var(--gold); width: 16px; height: 16px; }
         .entrega-opcao.selecionada { border-color: var(--gold); color: var(--gold); background: rgba(230,126,34,0.1); }
 
@@ -147,7 +144,6 @@
 
         .hidden { display: none; }
 
-        /* NOVO: botões de quantidade nos adicionais */
         .extra-row {
             display: flex; align-items: center; justify-content: space-between;
             padding: 8px 0; border-bottom: 1px solid #1a1a1a;
@@ -224,9 +220,8 @@
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
 <script>
-// ⏰ CONFIGURAÇÃO DE HORÁRIO — edite aqui facilmente
-const HORARIO_ABERTURA = 18;  // 18 = 18:00
-const HORARIO_FECHAMENTO = 23; // 23 = até 23:59
+const HORARIO_ABERTURA = 11;
+const HORARIO_FECHAMENTO = 23;
 
 function verificarStatusLoja() {
     const agora = new Date();
@@ -244,6 +239,7 @@ function verificarStatusLoja() {
 verificarStatusLoja();
 setInterval(verificarStatusLoja, 60000);
 </script>
+
 <!-- TELA DE LOJA FECHADA -->
 <div id="tela-fechada" style="display:none;position:fixed;inset:0;background:#080808;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:'Outfit',sans-serif;">
     <div style="font-size:4rem;margin-bottom:16px;">🍔</div>
@@ -251,6 +247,7 @@ setInterval(verificarStatusLoja, 60000);
     <p style="color:rgba(255,255,255,0.5);font-size:1.1rem;margin:0 0 8px;">Estamos fechados no momento.</p>
     <p style="color:rgba(255,255,255,0.3);font-size:0.9rem;">Em breve voltamos! 🙏</p>
 </div>
+
 <div style="padding: 10px 15px;">
     <div style="position: relative; background: #111; border-radius: 25px; padding: 5px 15px; border: 1px solid #333;">
         <i class="fas fa-search" style="color: var(--gold); margin-right: 10px;"></i>
@@ -290,7 +287,6 @@ setInterval(verificarStatusLoja, 60000);
     
             <div id="extras-lanches">
                 <p style="color:var(--gold); font-size:0.75rem; font-weight:bold; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">ADICIONAIS SALGADOS:</p>
-                <!-- NOVO: cada adicional com botão + e - -->
                 <div class="extra-row"><span class="extra-nome">Carne Artesanal</span><span class="extra-preco">+R$8,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="8.00" data-name="Carne Artesanal">+</button></div></div>
                 <div class="extra-row"><span class="extra-nome">Geléia Premium</span><span class="extra-preco">+R$6,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="6.00" data-name="Geléia Premium">+</button></div></div>
                 <div class="extra-row"><span class="extra-nome">Bacon</span><span class="extra-preco">+R$5,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="5.00" data-name="Bacon">+</button></div></div>
@@ -318,15 +314,12 @@ setInterval(verificarStatusLoja, 60000);
                 <div class="extra-row"><span class="extra-nome">Granola</span><span class="extra-preco">+R$2,00</span><div class="extra-controle"><button class="extra-qty-btn minus" onclick="alterarExtra(this,-1)">−</button><span class="extra-qty-num">0</span><button class="extra-qty-btn" onclick="alterarExtra(this,1)" data-price="2.00" data-name="Granola">+</button></div></div>
             </div>
         </div>
-<div id="extras-acai" class="hidden">
-   </div>
 
-<div id="extras-bebidas" class="hidden" style="margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
-    <p id="titulo-sabores" style="color:var(--gold); font-weight:bold; margin-bottom:10px;">Escolha o sabor:</p>
-    
-    <div id="container-opcoes-sabores" style="display: flex; flex-direction: column; gap: 10px;">
-    </div>
-</div>
+        <div id="extras-bebidas" class="hidden" style="margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
+            <p id="titulo-sabores" style="color:var(--gold); font-weight:bold; margin-bottom:10px;">Escolha o sabor:</p>
+            <div id="container-opcoes-sabores" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
         <div class="campo" style="margin-top:20px;">
             <label><i class="fas fa-comment-dots"></i> Observação / O que retirar?</label>
             <input type="text" id="modal-obs" placeholder="Ex: Tirar cebola, ponto da carne...">
@@ -363,7 +356,6 @@ setInterval(verificarStatusLoja, 60000);
     <div id="cart-items"></div>
 
     <div class="cart-footer">
-        <!-- NOVO: Radio Entrega / Retirada -->
         <div class="entrega-opcoes">
             <label class="entrega-opcao selecionada" id="label-entrega">
                 <input type="radio" name="tipo-pedido" value="entrega" checked onchange="alternarTipoPedido('entrega')">
@@ -374,70 +366,70 @@ setInterval(verificarStatusLoja, 60000);
                 <i class="fas fa-store"></i> RETIRADA
             </label>
         </div>
-        <!-- formulario -->
-       <div class="campo">
-    <input type="text" id="nome" placeholder="Seu nome:">
-</div>
-<div class="campo">
-    <input type="tel" id="telefone" placeholder="Seu WhatsApp: (99) 99999-9999">
-</div>
+
+        <div class="campo">
+            <input type="text" id="nome" placeholder="Seu nome:">
+        </div>
+        <div class="campo">
+            <input type="tel" id="telefone" placeholder="Seu WhatsApp: (99) 99999-9999">
+        </div>
 
         <div id="campos-entrega">
             <div class="campo">
                <select id="bairro" onchange="atualizarInterface()">
-    <option value="" data-fee="0">Selecione seu Bairro *</option>
-    <option value="Ana Julia" data-fee="9">Ana Julia (R$ 9,00)</option>
-    <option value="Baixão" data-fee="8">Baixão (R$ 8,00)</option>
-    <option value="Barra Azul" data-fee="10">Barra Azul (R$ 10,00)</option>
-    <option value="Bela Vista" data-fee="9">Bela Vista (R$ 9,00)</option>
-    <option value="Boa Vista" data-fee="6">Boa Vista (R$ 6,00)</option>
-    <option value="Bom Jardim" data-fee="7">Bom Jardim (R$ 7,00)</option>
-    <option value="Bom Jardim de baixo" data-fee="8">Bom Jardim de baixo (R$ 8,00)</option>
-    <option value="Brasil Novo" data-fee="8">Brasil Novo (R$ 8,00)</option>
-    <option value="Capeloza" data-fee="7">Capeloza (R$ 7,00)</option>
-    <option value="Centro" data-fee="6">Centro (R$ 6,00)</option>
-    <option value="Cikel" data-fee="6">Cikel (R$ 6,00)</option>
-    <option value="Colinas Parque" data-fee="9">Colinas Parque (R$ 9,00)</option>
-    <option value="Dr. Gilson" data-fee="8">Dr. Gilson (R$ 8,00)</option>
-    <option value="Flavio Dino" data-fee="10">Flavio Dino (R$ 10,00)</option>
-    <option value="Gastão Vieira" data-fee="4">Gastão Vieira (R$ 4,00)</option>
-    <option value="Jacu" data-fee="7">Jacu (R$ 7,00)</option>
-    <option value="Jardim America" data-fee="7">Jardim America (R$ 7,00)</option>
-    <option value="Jardim Aulidia" data-fee="10">Jardim Aulidia (R$ 10,00)</option>
-    <option value="Jardim de Alah" data-fee="4">Jardim de Alah (R$ 4,00)</option>
-    <option value="Jardim Gloria" data-fee="5">Jardim Gloria (R$ 5,00)</option>
-    <option value="Jardim Gloria 2" data-fee="6">Jardim Gloria 2 (R$ 6,00)</option>
-    <option value="Jardim Gloria 3" data-fee="6">Jardim Gloria 3 (R$ 6,00)</option>
-    <option value="Jardim Gloria City" data-fee="6">Jardim Gloria City (R$ 6,00)</option>
-    <option value="João Paulo" data-fee="7">João Paulo (R$ 7,00)</option>
-    <option value="Juscelino" data-fee="9">Juscelino (R$ 9,00)</option>
-    <option value="Laranjeiras" data-fee="7">Laranjeiras (R$ 7,00)</option>
-    <option value="Monte Sinai" data-fee="8">Monte Sinai (R$ 8,00)</option>
-    <option value="Morante Imperial" data-fee="14">Morante Imperial (R$ 14,00)</option>
-    <option value="Nova Açailândia" data-fee="7">Nova Açailândia (R$ 7,00)</option>
-    <option value="Nova Açailândia 2" data-fee="7">Nova Açailândia 2 (R$ 7,00)</option>
-    <option value="Novo Horizonte" data-fee="16">Novo Horizonte (R$ 16,00)</option>
-    <option value="Ouro verde" data-fee="6">Ouro verde (R$ 6,00)</option>
-    <option value="Parque da Lagoa" data-fee="6">Parque da Lagoa (R$ 6,00)</option>
-    <option value="Parque das Nações" data-fee="9">Parque das Nações (R$ 9,00)</option>
-    <option value="Parque Jardins" data-fee="15">Parque Jardins (R$ 15,00)</option>
-    <option value="Parque Planalto" data-fee="6">Parque Planalto (R$ 6,00)</option>
-    <option value="Pequia" data-fee="25">Pequia (R$ 25,00)</option>
-    <option value="Plano da Serra" data-fee="19">Plano da Serra (R$ 19,00)</option>
-    <option value="Porto Belo" data-fee="12">Porto Belo (R$ 12,00)</option>
-    <option value="Porto Seguro" data-fee="10">Porto Seguro (R$ 10,00)</option>
-    <option value="Residencial Tropical" data-fee="8">Residencial Tropical (R$ 8,00)</option>
-    <option value="Sarney Filho" data-fee="4">Sarney Filho (R$ 4,00)</option>
-    <option value="Sunil" data-fee="8">Sunil (R$ 8,00)</option>
-    <option value="Tancredo" data-fee="6">Tancredo (R$ 6,00)</option>
-    <option value="Valle do Açai" data-fee="14">Valle do Açai (R$ 14,00)</option>
-    <option value="Vila Ildemar" data-fee="8">Vila Ildemar (R$ 8,00)</option>
-    <option value="Vila Ipiranga" data-fee="7">Vila Ipiranga (R$ 7,00)</option>
-    <option value="Vila Maranhão" data-fee="7">Vila Maranhão (R$ 7,00)</option>
-    <option value="Vila Progresso 2" data-fee="6">Vila Progresso 2 (R$ 6,00)</option>
-    <option value="Vila São Francisco" data-fee="7">Vila São Francisco (R$ 7,00)</option>
-    <option value="Vila Sucuri" data-fee="8">Vila Sucuri (R$ 8,00)</option>
-</select>
+                    <option value="" data-fee="0">Selecione seu Bairro *</option>
+                    <option value="Ana Julia" data-fee="9">Ana Julia (R$ 9,00)</option>
+                    <option value="Baixão" data-fee="8">Baixão (R$ 8,00)</option>
+                    <option value="Barra Azul" data-fee="10">Barra Azul (R$ 10,00)</option>
+                    <option value="Bela Vista" data-fee="9">Bela Vista (R$ 9,00)</option>
+                    <option value="Boa Vista" data-fee="6">Boa Vista (R$ 6,00)</option>
+                    <option value="Bom Jardim" data-fee="7">Bom Jardim (R$ 7,00)</option>
+                    <option value="Bom Jardim de baixo" data-fee="8">Bom Jardim de baixo (R$ 8,00)</option>
+                    <option value="Brasil Novo" data-fee="8">Brasil Novo (R$ 8,00)</option>
+                    <option value="Capeloza" data-fee="7">Capeloza (R$ 7,00)</option>
+                    <option value="Centro" data-fee="6">Centro (R$ 6,00)</option>
+                    <option value="Cikel" data-fee="6">Cikel (R$ 6,00)</option>
+                    <option value="Colinas Parque" data-fee="9">Colinas Parque (R$ 9,00)</option>
+                    <option value="Dr. Gilson" data-fee="8">Dr. Gilson (R$ 8,00)</option>
+                    <option value="Flavio Dino" data-fee="10">Flavio Dino (R$ 10,00)</option>
+                    <option value="Gastão Vieira" data-fee="4">Gastão Vieira (R$ 4,00)</option>
+                    <option value="Jacu" data-fee="7">Jacu (R$ 7,00)</option>
+                    <option value="Jardim America" data-fee="7">Jardim America (R$ 7,00)</option>
+                    <option value="Jardim Aulidia" data-fee="10">Jardim Aulidia (R$ 10,00)</option>
+                    <option value="Jardim de Alah" data-fee="4">Jardim de Alah (R$ 4,00)</option>
+                    <option value="Jardim Gloria" data-fee="5">Jardim Gloria (R$ 5,00)</option>
+                    <option value="Jardim Gloria 2" data-fee="6">Jardim Gloria 2 (R$ 6,00)</option>
+                    <option value="Jardim Gloria 3" data-fee="6">Jardim Gloria 3 (R$ 6,00)</option>
+                    <option value="Jardim Gloria City" data-fee="6">Jardim Gloria City (R$ 6,00)</option>
+                    <option value="João Paulo" data-fee="7">João Paulo (R$ 7,00)</option>
+                    <option value="Juscelino" data-fee="9">Juscelino (R$ 9,00)</option>
+                    <option value="Laranjeiras" data-fee="7">Laranjeiras (R$ 7,00)</option>
+                    <option value="Monte Sinai" data-fee="8">Monte Sinai (R$ 8,00)</option>
+                    <option value="Morante Imperial" data-fee="14">Morante Imperial (R$ 14,00)</option>
+                    <option value="Nova Açailândia" data-fee="7">Nova Açailândia (R$ 7,00)</option>
+                    <option value="Nova Açailândia 2" data-fee="7">Nova Açailândia 2 (R$ 7,00)</option>
+                    <option value="Novo Horizonte" data-fee="16">Novo Horizonte (R$ 16,00)</option>
+                    <option value="Ouro verde" data-fee="6">Ouro verde (R$ 6,00)</option>
+                    <option value="Parque da Lagoa" data-fee="6">Parque da Lagoa (R$ 6,00)</option>
+                    <option value="Parque das Nações" data-fee="9">Parque das Nações (R$ 9,00)</option>
+                    <option value="Parque Jardins" data-fee="15">Parque Jardins (R$ 15,00)</option>
+                    <option value="Parque Planalto" data-fee="6">Parque Planalto (R$ 6,00)</option>
+                    <option value="Pequia" data-fee="25">Pequia (R$ 25,00)</option>
+                    <option value="Plano da Serra" data-fee="19">Plano da Serra (R$ 19,00)</option>
+                    <option value="Porto Belo" data-fee="12">Porto Belo (R$ 12,00)</option>
+                    <option value="Porto Seguro" data-fee="10">Porto Seguro (R$ 10,00)</option>
+                    <option value="Residencial Tropical" data-fee="8">Residencial Tropical (R$ 8,00)</option>
+                    <option value="Sarney Filho" data-fee="4">Sarney Filho (R$ 4,00)</option>
+                    <option value="Sunil" data-fee="8">Sunil (R$ 8,00)</option>
+                    <option value="Tancredo" data-fee="6">Tancredo (R$ 6,00)</option>
+                    <option value="Valle do Açai" data-fee="14">Valle do Açai (R$ 14,00)</option>
+                    <option value="Vila Ildemar" data-fee="8">Vila Ildemar (R$ 8,00)</option>
+                    <option value="Vila Ipiranga" data-fee="7">Vila Ipiranga (R$ 7,00)</option>
+                    <option value="Vila Maranhão" data-fee="7">Vila Maranhão (R$ 7,00)</option>
+                    <option value="Vila Progresso 2" data-fee="6">Vila Progresso 2 (R$ 6,00)</option>
+                    <option value="Vila São Francisco" data-fee="7">Vila São Francisco (R$ 7,00)</option>
+                    <option value="Vila Sucuri" data-fee="8">Vila Sucuri (R$ 8,00)</option>
+                </select>
             </div>
             <div class="campo">
                 <input type="text" id="endereco" placeholder="Rua, número e referência">
@@ -446,19 +438,19 @@ setInterval(verificarStatusLoja, 60000);
 
         <div class="campo">
             <b style="font-size: 12px;">Escolha até 2 formas de pagar:</b>
-    <select id="pagamento" onchange="handlePagamento(this.value)">
-        <option value="Forma de Pagamento:">Forma de Pagamento:</option>
-        <option value="PIX">PIX (envie o comprovante)</option>
-        <option value="Cartão">Cartão (Levamos a maquininha)</option>
-        <option value="Dinheiro">Dinheiro</option>
-    </select>
-</div>
+            <select id="pagamento" onchange="handlePagamento(this.value)">
+                <option value="Forma de Pagamento:">Forma de Pagamento:</option>
+                <option value="PIX">PIX (envie o comprovante)</option>
+                <option value="Cartão">Cartão (Levamos a maquininha)</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
+        </div>
 
-<div id="lista-pagamentos-carrinho" style="margin-bottom: 10px;"></div>
+        <div id="lista-pagamentos-carrinho" style="margin-bottom: 10px;"></div>
 
-<div class="campo hidden" id="campo-troco">
-    <input type="number" id="troco" placeholder="Troco para quanto?">
-</div>
+        <div class="campo hidden" id="campo-troco">
+            <input type="number" id="troco" placeholder="Troco para quanto?">
+        </div>
 
         <div style="background:#000; padding:10px; border-radius:8px; margin: 10px 0;">
             <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#888;">
@@ -482,10 +474,6 @@ setInterval(verificarStatusLoja, 60000);
         <p style="font-size: 1.3rem; font-weight: 900; color: var(--gold); letter-spacing: 1px;">🏆 CLUBE DE FIDELIDADE GC</p>
         <p style="font-size: 0.85rem; color: #ccc; margin: 8px 0 4px;">A cada <strong style="color:var(--gold)">10 pedidos</strong>, você ganha um <strong style="color:white">lanche grátis!</strong></p>
         <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 12px;">Promoções exclusivas, sorteios e muito mais pra quem é cliente fiel 🔥</p>
-        <!-- <a href="https://wa.me/559992247546?text=Quero%20participar%20do%20Clube%20de%20Fidelidade%20GC!" 
-           style="background: var(--gold); color: white; padding: 10px 22px; border-radius: 25px; font-weight: 800; font-size: 0.85rem; text-decoration: none; display: inline-block;">
-            <i class="fab fa-whatsapp"></i> QUERO PARTICIPAR!
-        </a> -->
     </div>
     <div class="social-links">
         <a href="https://www.instagram.com/gc_burguer?igsh=MTkybXhnNXlpYXFhdA=="><i class="fab fa-instagram"></i></a>
@@ -515,7 +503,34 @@ let carrinho = [];
 let itemSelecionado = null;
 let statusEstoque = {};
 
-// NOVO: Descrições dos produtos | Usa o nome do item como um ID
+// ── PROTEÇÃO ANTI-PEDIDO DUPLICADO ─────────────────────────────────────────
+const COOLDOWN_MS = 30000; // 3 minuto — altere aqui se quiser mudar o tempo
+
+function getPedidoCooldown() {
+    const ts = localStorage.getItem('gc_ultimo_pedido');
+    if (!ts) return 0;
+    const restante = COOLDOWN_MS - (Date.now() - parseInt(ts));
+    return restante > 0 ? restante : 0;
+}
+
+function setPedidoCooldown() {
+    localStorage.setItem('gc_ultimo_pedido', Date.now().toString());
+setTimeout(() => { window.location.reload(); }, 61000);
+}
+
+function hashCarrinho(carr) {
+    return carr.map(i => `${i.nome}|${i.qty}|${i.precoUnitario}`).join(';');
+}
+
+function getUltimoHashCarrinho() {
+    return localStorage.getItem('gc_ultimo_hash') || '';
+}
+
+function setUltimoHashCarrinho(hash) {
+    localStorage.setItem('gc_ultimo_hash', hash);
+}
+// ───────────────────────────────────────────────────────────────────────────
+
 const descricoes = {
     'Misto': 'Pão de forma, queijo e presunto',
     'X-Tudo': 'Carne artesanal 100g, queijo, ovo, presunto, salsicha, tomate, alface, molho, milho e batata palha',
@@ -547,7 +562,6 @@ const descricoes = {
     'Açaí 500ml': 'Açaí 500ml. Leite condensado, leite em pó, granola e tapioca',
 };
 
-// NOVO: alternar entrega/retirada
 window.alternarTipoPedido = (tipo) => {
     const camposEntrega = document.getElementById('campos-entrega');
     const labelEntrega = document.getElementById('label-entrega');
@@ -564,7 +578,6 @@ window.alternarTipoPedido = (tipo) => {
     atualizarInterface();
 };
 
-// NOVO: função para alterar qtd dos adicionais com botões +/-
 window.alterarExtra = (btn, delta) => {
     const controle = btn.parentElement;
     const numSpan = controle.querySelector('.extra-qty-num');
@@ -719,7 +732,6 @@ window.abrirModal = (prod) => {
         let opcoesHTML = "";
         const nomeProd = prod.nome.toLowerCase();
 
-        // Lógica de Sabores Dinâmicos
         if (nomeProd.includes('suco') || nomeProd.includes('vitamina')) {
             tituloSabores.innerText = "Escolha a fruta:";
             const frutas = ["Acerola", "Goiaba", "Cajá", "Maracujá"];
@@ -737,7 +749,6 @@ window.abrirModal = (prod) => {
                 </label>
             `).join('');
         } else {
-            // Para água ou itens sem sabor específico, esconde a seção
             bebidas.classList.add('hidden');
         }
         
@@ -762,15 +773,12 @@ window.confirmarAdicao = () => {
     let extrasNomes = [];
     let saborEscolhido = "";
 
-    // 1. CAPTURA DE DADOS POR CATEGORIA
     if (itemSelecionado.categoria === 'bebidas') {
         const inputSabor = document.querySelector('input[name="sabor-bebida"]:checked');
         if (inputSabor) {
             saborEscolhido = inputSabor.value;
-            // IMPORTANTE: Não damos push no extrasNomes aqui para não duplicar no visual do carrinho
         }
     } else {
-        // Se NÃO for bebida, faz a leitura normal dos contadores +/- (Lanches/Açaí)
         document.querySelectorAll('.extra-row').forEach(row => {
             const numSpan = row.querySelector('.extra-qty-num');
             const btnPlus = row.querySelector('.extra-qty-btn:not(.minus)');
@@ -785,19 +793,15 @@ window.confirmarAdicao = () => {
         });
     }
 
-    // 2. CRIAÇÃO DA CHAVE ÚNICA (Para agrupar itens iguais corretamente)
     const observacaoManual = document.getElementById('modal-obs').value.trim();
-    // A chave precisa do sabor para não misturar uma Coca com uma Fanta no carrinho
     const chave = itemSelecionado.nome + '|' + saborEscolhido + '|' + extrasNomes.join(',') + '|' + observacaoManual;
     
-    // 3. MONTAGEM DA OBSERVAÇÃO (O que o servidor lê para imprimir)
     let listaParaImpressao = [];
     if (saborEscolhido) listaParaImpressao.push("Sabor: " + saborEscolhido);
     if (observacaoManual) listaParaImpressao.push("Obs: " + observacaoManual);
     
     const obsFinalFormatada = listaParaImpressao.join(' | ');
 
-    // 4. LÓGICA DE AGRUPAMENTO NO CARRINHO
     const existente = carrinho.find(i => i.chave === chave);
     if (existente) {
         existente.qty += 1;
@@ -809,23 +813,20 @@ window.confirmarAdicao = () => {
             precoUnitario: itemSelecionado.preco + valorExtras,
             precoTotal: itemSelecionado.preco + valorExtras,
             qty: 1,
-            obs: obsFinalFormatada,        // Servidor lê aqui (Sabor: Coca | Obs: Sem gelo)
-            extras: extrasNomes.join(', ') // Carrinho mostra aqui (Bacon, Queijo)
+            obs: obsFinalFormatada,
+            extras: extrasNomes.join(', ')
         });
     }
 
-    // 5. FINALIZAÇÃO E LIMPEZA
     atualizarInterface();
     fecharModal();
 
-    // Feedback visual (Toast)
     const t = document.getElementById('toast');
     if(t) { 
         t.style.display = 'block'; 
         setTimeout(() => t.style.display = 'none', 2000); 
     }
 
-    // Resetar campos do modal
     document.querySelectorAll('.extra-qty-num').forEach(n => n.innerText = '0');
     const radioPadrao = document.querySelector('input[name="sabor-bebida"][value="Coca-Cola"]');
     if(radioPadrao) radioPadrao.checked = true;
@@ -841,7 +842,6 @@ window.atualizarInterface = () => {
     let subtotal = 0;
 
     carrinho.forEach((item, index) => {
-        // NOVO: precoTotal é unitario * qty
         item.precoTotal = item.precoUnitario * item.qty;
         subtotal += item.precoTotal;
         list.innerHTML += `
@@ -852,7 +852,6 @@ window.atualizarInterface = () => {
                 </div>
                 ${item.extras ? `<div class="cart-item-detail">+ ${item.extras}</div>` : ''}
                 ${item.obs ? `<div class="cart-item-detail" style="color:#c9973a">Obs: ${item.obs}</div>` : ''}
-                <!-- NOVO: controles de qty no carrinho -->
                 <div class="cart-item-qty">
                     <button class="qty-btn" onclick="alterarQtyCarrinho(${index}, -1)">−</button>
                     <span class="qty-num">${item.qty}</span>
@@ -869,21 +868,18 @@ window.atualizarInterface = () => {
     document.getElementById('total-cart').innerText = `R$ ${(subtotal + taxaEntrega).toFixed(2).replace('.', ',')}`;
 };
 
-// NOVO: alterar quantidade diretamente no carrinho
 window.alterarQtyCarrinho = (index, delta) => {
     carrinho[index].qty += delta;
     if (carrinho[index].qty <= 0) carrinho.splice(index, 1);
     atualizarInterface();
 };
 
-// MANTIDO: remover item (compatibilidade)
 window.removerItem = (index) => {
     carrinho.splice(index, 1);
     atualizarInterface();
 };
 
 function buildPixBRCode(key, name, city, amount) {
-    // AJUSTE AQUI: Se a chave começar com +, mantemos o +, senão limpamos tudo
     const cleanKey = key.startsWith('+') ? '+' + key.replace(/\D/g, '') : key.replace(/\D/g, ''); 
     
     const valorFormatado = Number(amount).toFixed(2);
@@ -916,7 +912,7 @@ function buildPixBRCode(key, name, city, amount) {
     }
     return payload + crc.toString(16).toUpperCase().padStart(4, "0");
 }
-// Variável global para armazenar os pagamentos parciais
+
 let pagamentosRealizados = [];
 
 window.handlePagamento = async (valor) => {
@@ -926,7 +922,6 @@ window.handlePagamento = async (valor) => {
     
     if (valor === 'Forma de Pagamento:' || !valor) return;
 
-    // Calcular quanto ainda falta pagar
     const subtotal = carrinho.reduce((acc, item) => acc + item.precoUnitario * item.qty, 0);
     const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
     const bairroSelect = document.getElementById('bairro');
@@ -969,14 +964,12 @@ window.handlePagamento = async (valor) => {
         if (valorEntregue) {
             const valorNumEntregue = parseFloat(valorEntregue);
             
-            // Adiciona o pagamento fixado no valor que faltava
             pagamentosRealizados.push({ 
                 metodo: 'Dinheiro', 
                 valor: restante, 
                 entregue: valorNumEntregue 
             });
 
-            // Se houver troco, preenche o campo e avisa o usuário
             if (valorNumEntregue > restante) {
                 const valorTroco = valorNumEntregue - restante;
                 if(inputTroco) inputTroco.value = valorNumEntregue.toFixed(2);
@@ -993,7 +986,6 @@ window.handlePagamento = async (valor) => {
             }
         }
     } else {
-        // Lógica para PIX e Cartão (Valor Exato)
         const { value: valorInformado } = await Swal.fire({
             title: `Pagar com ${valor}`,
             text: `Valor: R$ ${restante.toFixed(2).replace('.', ',')}`,
@@ -1024,7 +1016,6 @@ window.handlePagamento = async (valor) => {
         }
     }
 
-    // Atualiza visibilidade do campo de troco
     const temDinheiro = pagamentosRealizados.some(p => p.metodo === 'Dinheiro');
     if(campoTroco) campoTroco.classList.toggle('hidden', !temDinheiro);
 
@@ -1068,9 +1059,47 @@ window.processarPedido = async () => {
     if (Math.abs(totalNumerico - totalPago) > 0.05) {
         return Swal.fire({ icon:'warning', title:'Pagamento Incompleto', text:`Faltam R$ ${(totalNumerico - totalPago).toFixed(2).replace('.', ',')}`, background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     }
+
+    // ── PROTEÇÃO ANTI-DUPLICADO — CAMADA 2: COOLDOWN ──────────────────────
+    const cooldown = getPedidoCooldown();
+    if (cooldown > 0) {
+        const seg = Math.ceil(cooldown / 1000);
+        return Swal.fire({
+            icon: 'info',
+            title: 'Calma aí! 😄',
+            html: `Seu pedido já foi enviado!<br>Aguarde <b>${seg} segundo${seg !== 1 ? 's' : ''}</b> antes de enviar outro.`,
+            background: '#111', color: '#fff', confirmButtonColor: '#c9973a'
+        });
+    }
+
+    // ── PROTEÇÃO ANTI-DUPLICADO — CAMADA 3: HASH DO CARRINHO ──────────────
+    const hashAtual = hashCarrinho(carrinho);
+    if (hashAtual === getUltimoHashCarrinho() && getPedidoCooldown() > 0) {
+        const { isConfirmed } = await Swal.fire({
+            icon: 'warning',
+            title: 'Pedido duplicado?',
+            text: 'Esse pedido parece idêntico ao anterior. Deseja enviar mesmo assim?',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, enviar',
+            cancelButtonText: 'Cancelar',
+            background: '#111', color: '#fff', confirmButtonColor: '#c9973a'
+        });
+        if (!isConfirmed) return;
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
+    // ── PROTEÇÃO ANTI-DUPLICADO — CAMADA 1: TRAVAR BOTÃO ──────────────────
+    const btnEnviar = document.querySelector('button[onclick="processarPedido()"]');
+    if (btnEnviar) {
+        btnEnviar.disabled = true;
+        btnEnviar.style.opacity = '0.5';
+        btnEnviar.style.cursor = 'not-allowed';
+        btnEnviar.innerHTML = '<i class="fab fa-whatsapp"></i> ENVIANDO...';
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
     const resumoPagamento = pagamentosRealizados.map(p => `${p.metodo} (R$ ${p.valor.toFixed(2).replace('.', ',')})`).join(' + ');
 
-    // Cálculo de troco para o WhatsApp
     const pagDinheiro = pagamentosRealizados.find(p => p.metodo === 'Dinheiro');
     let infoTrocoWhats = "";
     if (pagDinheiro && pagDinheiro.entregue > pagDinheiro.valor) {
@@ -1085,7 +1114,7 @@ window.processarPedido = async () => {
         endereco,
         tipoPedido: tipoSelecionado,
         pagamento: resumoPagamento,
-        troco: troco, // Valor "Troco para quanto?"
+        troco: troco,
         itens: carrinho.map(i => ({ nome: i.nome, preco: i.precoUnitario, qty: i.qty, obs: i.obs || '', extras: i.extras || '' })),
         taxaEntrega,
         total: totalNumerico,
@@ -1096,6 +1125,11 @@ window.processarPedido = async () => {
 
     try {
         await addDoc(collection(db, "pedidos"), pedidoFirestore);
+
+        // ── PROTEÇÃO ANTI-DUPLICADO — REGISTRAR COOLDOWN E HASH ───────────
+        setPedidoCooldown();
+        setUltimoHashCarrinho(hashAtual);
+        // ──────────────────────────────────────────────────────────────────
 
         let msg = `*🔥 NOVO PEDIDO - GC BURGUER *\n`;
         msg += `*Tipo:* ${tipoSelecionado === 'retirada' ? '🏪 RETIRADA NO LOCAL' : '🛵 ENTREGA'}\n`;
@@ -1109,8 +1143,7 @@ window.processarPedido = async () => {
         msg += `------------------------------\n`;
         msg += `*TOTAL: R$ ${totalNumerico.toFixed(2).replace('.', ',')}*\n\n`;
         msg += `*PAGAMENTO:* ${resumoPagamento}`;
-        msg += infoTrocoWhats; 
-        
+        msg += infoTrocoWhats;
         msg += `\n------------------------------\n`;
         msg += `*CLIENTE:* ${nome}\n`;
         msg += `*TELEFONE:* ${telefone}\n`;
@@ -1119,19 +1152,21 @@ window.processarPedido = async () => {
         }
 
         window.open(`https://wa.me/5599991154876?text=${encodeURIComponent(msg)}`);
-
-        carrinho = [];
-        pagamentosRealizados = [];
-        atualizarInterface();
-        document.getElementById('cart-sidebar').classList.remove('open');
-        fecharPix();
-        Swal.fire({ icon: 'success', title: 'Pedido Enviado!', background: '#111', color: '#fff', confirmButtonColor: '#c9973a' });
+localStorage.removeItem('gc_ultimo_hash');
+setTimeout(() => { window.location.reload(); }, 500);
     } catch (error) {
         console.error("Erro:", error);
+        // Reativa o botão em caso de erro para o cliente tentar novamente
+        if (btnEnviar) {
+            btnEnviar.disabled = false;
+            btnEnviar.style.opacity = '1';
+            btnEnviar.style.cursor = 'pointer';
+            btnEnviar.innerHTML = '<i class="fab fa-whatsapp"></i> ENVIAR PEDIDO';
+        }
+        Swal.fire({ icon: 'error', title: 'Erro ao enviar!', text: 'Tente novamente.', background: '#111', color: '#fff', confirmButtonColor: '#c9973a' });
     }
 };
 
-// Função auxiliar para garantir o cálculo correto em qualquer parte do script
 function calcularTotalGeral() {
     const subtotal = carrinho.reduce((s, i) => s + i.precoUnitario * i.qty, 0);
     const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
@@ -1178,15 +1213,16 @@ inicializarApp();
         console.log('Erro ao verificar status:', e.message);
     }
 })();
- // Bloqueios de segurança
-  document.addEventListener('keydown', function (e) {
+
+// Bloqueios de segurança
+document.addEventListener('keydown', function (e) {
     if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
     if (e.key === 'F12') { e.preventDefault(); }
-  });
-  document.addEventListener('keydown', function (event) {
+});
+document.addEventListener('keydown', function (event) {
     if (event.ctrlKey && event.shiftKey && event.key === 'I') { event.preventDefault(); }
-  });
-  document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+});
+document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
 </script>
 </body>
-</html>
+</html> setPedidoCooldown()
