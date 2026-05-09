@@ -220,7 +220,7 @@
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
 <script>
-const HORARIO_ABERTURA = 11;
+const HORARIO_ABERTURA = 18;
 const HORARIO_FECHAMENTO = 23;
 
 function verificarStatusLoja() {
@@ -734,7 +734,7 @@ window.abrirModal = (prod) => {
 
         if (nomeProd.includes('suco') || nomeProd.includes('vitamina')) {
             tituloSabores.innerText = "Escolha a fruta:";
-            const frutas = ["Acerola", "Goiaba", "Cajá", "Maracujá"];
+            const frutas = ["Acerola", "Goiaba", "Cajá", "Maracujá", "Cupuaçu"];
             opcoesHTML = frutas.map((f, i) => `
                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                     <input type="radio" name="sabor-bebida" value="${f}" ${i === 0 ? 'checked' : ''}> ${f}
@@ -1225,4 +1225,4 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
 </script>
 </body>
-</html> setPedidoCooldown()
+</html>
