@@ -220,7 +220,7 @@
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
 <script>
-const HORARIO_ABERTURA = 18;
+const HORARIO_ABERTURA = 14;
 const HORARIO_FECHAMENTO = 23;
 
 function verificarStatusLoja() {
@@ -339,8 +339,8 @@ setInterval(verificarStatusLoja, 60000);
     <textarea id="pix-copia" readonly></textarea>
     <p style="margin-top:10px; font-size:0.9rem; color:#ccc;">
       Valor Total: <span id="pix-valor" style="font-weight:bold; color:white;"></span><br>
-      Chave: 5599992166621<br>
-      Favorecido: Gabriel Costa Gomes    99992247546
+      Chave: CNPJ - 59384830000102<br>
+      Favorecido: GC BURGUER LTDA   
     </p>
     <button onclick="fecharPix()" style="margin-top:15px; width:100%; background:var(--gold); color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">CONTINUE O PEDIDO:</button>
   </div>
@@ -1030,7 +1030,7 @@ function abrirModalPixMisto(valor) {
         const qrContainer = document.getElementById('pix-qrcode');
         if (qrContainer) {
             qrContainer.innerHTML = ""; 
-            const pixCode = buildPixBRCode("+5599992166621", "GABRIEL COSTA GOMES", "SANTANDER", valor);
+            const pixCode = buildPixBRCode("59384830000102", "GC BURGUER LTDA", "BANCO: Stone", valor);
             document.getElementById('pix-copia').value = pixCode;
             new QRCode(qrContainer, { text: pixCode, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
         }
