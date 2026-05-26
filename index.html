@@ -220,7 +220,7 @@
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
 <script>
-const HORARIO_ABERTURA = 18;
+const HORARIO_ABERTURA = 14;
 const HORARIO_FECHAMENTO = 23;
 
 function verificarStatusLoja() {
@@ -403,6 +403,7 @@ setInterval(verificarStatusLoja, 60000);
                     <option value="Jardim Gloria City" data-fee="6">Jardim Gloria City (R$ 6,00)</option>
                     <option value="João Paulo" data-fee="7">João Paulo (R$ 7,00)</option>
                     <option value="Juscelino" data-fee="9">Juscelino (R$ 9,00)</option>
+                    <option value="Getat" data-fee="7">Getat (R$ 7,00)</option>
                     <option value="Laranjeiras" data-fee="7">Laranjeiras (R$ 7,00)</option>
                     <option value="Monte Sinai" data-fee="8">Monte Sinai (R$ 8,00)</option>
                     <option value="Morante Imperial" data-fee="14">Morante Imperial (R$ 14,00)</option>
@@ -431,9 +432,10 @@ setInterval(verificarStatusLoja, 60000);
                     <option value="Vila Sucuri" data-fee="8">Vila Sucuri (R$ 8,00)</option>
                 </select>
             </div>
-            <div class="campo">
-                <input type="text" id="endereco" placeholder="Rua, número e referência">
-            </div>
+            <div class="campo" style="display:flex; gap:8px;">
+    <input type="text" id="endereco" placeholder="Rua e referência" style="flex:1;">
+    <input type="text" id="numero" placeholder="Nº" style="width:70px;">
+</div>
         </div>
 
         <div class="campo">
@@ -1043,7 +1045,9 @@ window.processarPedido = async () => {
     const tipoSelecionado = document.querySelector('input[name="tipo-pedido"]:checked')?.value || 'entrega';
     const bairroSelect = document.getElementById('bairro');
     const bairro = tipoSelecionado === 'retirada' ? 'Retirada no local' : bairroSelect.value;
-    const endereco = tipoSelecionado === 'retirada' ? 'Retirada no local' : document.getElementById('endereco').value.trim();
+   const numero = document.getElementById('numero')?.value?.trim() || '';
+const enderecoBase = tipoSelecionado === 'retirada' ? 'Retirada no local' : document.getElementById('endereco').value.trim();
+const endereco = (tipoSelecionado === 'entrega' && numero) ? `${enderecoBase}, Nº ${numero}` : enderecoBase;
     const troco = document.getElementById('troco')?.value || "";
 
     const taxaEntrega = tipoSelecionado === 'retirada' ? 0 : parseFloat(bairroSelect.options[bairroSelect.selectedIndex].dataset.fee || 0);
@@ -1054,8 +1058,8 @@ window.processarPedido = async () => {
     if(!nome || !telefone) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Nome e WhatsApp são obrigatórios!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     if(carrinho.length === 0) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Seu carrinho está vazio!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     if(tipoSelecionado === 'entrega' && !bairro) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Selecione seu bairro para calcular a taxa de entrega!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
-    if(tipoSelecionado === 'entrega' && !endereco) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Informe seu endereço completo!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
-
+if(tipoSelecionado === 'entrega' && !endereco) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Informe seu endereço completo!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
+if(tipoSelecionado === 'entrega' && !numero) return Swal.fire({ icon:'warning', title:'Atenção!', text:'Informe o número do endereço!', background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     if (Math.abs(totalNumerico - totalPago) > 0.05) {
         return Swal.fire({ icon:'warning', title:'Pagamento Incompleto', text:`Faltam R$ ${(totalNumerico - totalPago).toFixed(2).replace('.', ',')}`, background:'#111', color:'#fff', confirmButtonColor:'#c9973a' });
     }
@@ -1226,3 +1230,4 @@ document.addEventListener('contextmenu', function (event) { event.preventDefault
 </script>
 </body>
 </html>
+
