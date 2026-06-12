@@ -220,7 +220,7 @@
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
 <script>
-const HORARIO_ABERTURA = 14;
+const HORARIO_ABERTURA = 18;
 const HORARIO_FECHAMENTO = 23;
 
 function verificarStatusLoja() {
@@ -540,6 +540,7 @@ const descricoes = {
     'Bacon Prime': 'Carne artesanal 120g, bacon crocante, queijo, presunto, tomate, alface e molho especial',
     'Cala-Bacon Prime': 'Carne artesanal 120g, calabresa, bacon crocante, queijo, tomate, alface e molho especial',
     'Imperador Duplo': '2 carnes artesanais 120g, queijo, presunto, ovo, tomate, alface e molho da casa',
+    'Combo Dia dos Namorados': '2 X-tudo + Batata Turbinada M + Refri de 1L + Sobremesa.',
     'Barca Simples': 'X-Tudo + Batata P c/ bacon e cheddar + Mini pasteis + Calabresa + Refri Lata.',
     'Combo Classico': 'Bacon prime + Batata P + Refri Lata.',
     'Super Combo': 'X-Tudo + Batata 200g + Refri Lata.',
@@ -612,6 +613,7 @@ async function inicializarApp() {
                 { categoria: 'hamburgueres', nome: 'Bacon Prime', preco: 16.00, img: 'x-bacon.jpg' },
                 { categoria: 'hamburgueres', nome: 'Cala-Bacon Prime', preco: 18.00, img: 'xcalas.jpg' },
                 { categoria: 'hamburgueres', nome: 'Imperador Duplo', preco: 20.00, img: 'xtud.jpg' },
+                { categoria: 'combos', nome: 'Combo Dia dos Namorados', preco: 58.00, img: 'promo.jpeg' },
                 { categoria: 'combos', nome: 'Barca Simples', preco: 30.00, img: 'c5.jpeg' },
                 { categoria: 'combos', nome: 'Super Combo', preco: 22.00, img: 'c1.jpeg' },
                 { categoria: 'combos', nome: 'Combo Classico', preco: 26.00, img: 'c2.jpeg' },
@@ -1230,4 +1232,3 @@ document.addEventListener('contextmenu', function (event) { event.preventDefault
 </script>
 </body>
 </html>
-
