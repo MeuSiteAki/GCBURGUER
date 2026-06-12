@@ -263,7 +263,7 @@ setInterval(verificarStatusLoja, 60000);
     <button class="tab-btn" onclick="filterMenu('pastéis')">PASTÉIS</button>
     <button class="tab-btn" onclick="filterMenu('batatas')">BATATAS</button>
     <button class="tab-btn" onclick="filterMenu('bebidas')">BEBIDAS</button>
-    <button class="tab-btn" onclick="filterMenu('açaí')">AÇAÍ</button>
+    <button class="tab-btn" onclick="filterMenu('açaí')">AÇAÍ/BOLO</button>
 </div>
 <i style="font-size: 10px;">*Imagens meramente ilustrativas</i>
 <div class="container" id="menu-container"></div>
@@ -563,6 +563,7 @@ const descricoes = {
     'Açaí 300ml': 'Açaí 300ml. Leite condensado, leite em pó, granola e tapioca',
     'Açaí 400ml': 'Açaí 400ml. Leite condensado, leite em pó, granola e tapioca',
     'Açaí 500ml': 'Açaí 500ml. Leite condensado, leite em pó, granola e tapioca',
+    'Bolo no Pote': 'Bolo no Pote. Chocolate com Beijinho',
 };
 
 window.alternarTipoPedido = (tipo) => {
@@ -648,6 +649,7 @@ async function inicializarApp() {
                 { categoria: 'açaí', nome: 'Açaí 300ml', preco: 11.00, img: 'acai.jpg' },
                 { categoria: 'açaí', nome: 'Açaí 400ml', preco: 13.00, img: 'acai.jpg' },
                 { categoria: 'açaí', nome: 'Açaí 500ml', preco: 15.00, img: 'acai.jpg' },
+                { categoria: 'açaí', nome: 'Bolo no Pote', preco: 5.00, img: 'bolo.jpg' },
             ];
         }
        
