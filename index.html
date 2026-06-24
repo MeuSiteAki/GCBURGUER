@@ -219,7 +219,7 @@
 </header>
 <div id="status-loja" style="margin-top: 10px; font-weight: bold; letter-spacing: 1px; text-align: center;"></div>
 
-<script>
+<!-- <script>
 const HORARIO_ABERTURA = 18;
 const HORARIO_FECHAMENTO = 23;
 
@@ -238,7 +238,7 @@ function verificarStatusLoja() {
 }
 verificarStatusLoja();
 setInterval(verificarStatusLoja, 60000);
-</script>
+</script> -->
 
 <!-- TELA DE LOJA FECHADA -->
 <div id="tela-fechada" style="display:none;position:fixed;inset:0;background:#080808;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:'Outfit',sans-serif;">
@@ -386,7 +386,7 @@ setInterval(verificarStatusLoja, 60000);
                     <option value="Bom Jardim" data-fee="7">Bom Jardim (R$ 7,00)</option>
                     <option value="Bom Jardim de baixo" data-fee="8">Bom Jardim de baixo (R$ 8,00)</option>
                     <option value="Brasil Novo" data-fee="8">Brasil Novo (R$ 8,00)</option>
-                    <option value="Capeloza" data-fee="7">Capeloza (R$ 7,00)</option>
+                    <option value="Capeloza" data-fee="6">Capeloza (R$ 6,00)</option>
                     <option value="Centro" data-fee="6">Centro (R$ 6,00)</option>
                     <option value="Cikel" data-fee="6">Cikel (R$ 6,00)</option>
                     <option value="Colinas Parque" data-fee="9">Colinas Parque (R$ 9,00)</option>
@@ -1030,17 +1030,15 @@ window.handlePagamento = async (valor) => {
 };
 
 function abrirModalPixMisto(valor) {
-    document.getElementById('modal-pix').style.display = 'flex';
-    document.getElementById('pix-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
-    setTimeout(() => {
-        const qrContainer = document.getElementById('pix-qrcode');
-        if (qrContainer) {
-            qrContainer.innerHTML = ""; 
-            const pixCode = buildPixBRCode("59384830000102", "GC BURGUER LTDA", "BANCO: Stone", valor);
-            document.getElementById('pix-copia').value = pixCode;
-            new QRCode(qrContainer, { text: pixCode, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
-        }
-    }, 300);
+    Swal.fire({
+        icon: 'info',
+        title: '💸 Pagamento via PIX',
+        html: `Após enviar o pedido, solicite a chave PIX no nosso <b>WhatsApp</b>!`,
+        background: '#111',
+        color: '#fff',
+        confirmButtonColor: '#c9973a',
+        confirmButtonText: 'Entendido!'
+    });
 }
 
 window.processarPedido = async () => {
@@ -1184,18 +1182,8 @@ function calcularTotalGeral() {
 };
 
 window.fecharPix = () => document.getElementById('modal-pix').style.display = 'none';
+
 window.toggleCart = () => {
-    if (!verificarStatusLoja()) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Estamos fechados!',
-            text: `Voltamos às ${HORARIO_ABERTURA}:00. Fique à vontade para ver o cardápio! 😊`,
-            background: '#111',
-            color: '#fff',
-            confirmButtonColor: '#c9973a'
-        });
-        return;
-    }
     document.getElementById('cart-sidebar').classList.toggle('open');
 };
 inicializarApp();
@@ -1223,14 +1211,17 @@ inicializarApp();
 })();
 
 // Bloqueios de segurança
-document.addEventListener('keydown', function (e) {
-    if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
-    if (e.key === 'F12') { e.preventDefault(); }
-});
-document.addEventListener('keydown', function (event) {
-    if (event.ctrlKey && event.shiftKey && event.key === 'I') { event.preventDefault(); }
-});
-document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+// document.addEventListener('keydown', function (e) {
+//     if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); }
+//     if (e.key === 'F12') { e.preventDefault(); }
+// });
+// document.addEventListener('keydown', function (event) {
+//     if (event.ctrlKey && event.shiftKey && event.key === 'I') { event.preventDefault(); }
+// });
+// document.addEventListener('contextmenu', function (event) { event.preventDefault(); });
 </script>
 </body>
 </html>
+
+
+abrirModalPixMisto 
