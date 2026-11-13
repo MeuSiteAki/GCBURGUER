@@ -638,10 +638,10 @@ async function inicializarApp() {
                 { categoria: 'pastéis', nome: 'Pastel de Queijo', preco: 11.00, img: 'pasq.jpg' },
                 { categoria: 'pastéis', nome: 'Pastel Tudão', preco: 12.00, img: 'past.jpg' },
                 { categoria: 'pastéis', nome: 'Pastel Romeu e Julieta', preco: 10.00, img: 'pasro.jpg' },
-                { categoria: 'bebidas', nome: 'Refrigerante lata 220ml', preco: 4.00, img: 'refri220.jpg' },
-                { categoria: 'bebidas', nome: 'Refrigerante lata 350ml', preco: 6.00, img: 'refri350.jpg' },
-                { categoria: 'bebidas', nome: 'Refrigerante 1 litro', preco: 10.00, img: 'refri1.jpg' },
-                { categoria: 'bebidas', nome: 'Refrigerante 2 litros', preco: 15.00, img: 'refri2.jpg' },
+                { categoria: 'bebidas', nome: 'Refri lata 220ml', preco: 4.00, img: 'refri220.jpg' },
+                { categoria: 'bebidas', nome: 'Refri lata 350ml', preco: 6.00, img: 'refri350.jpg' },
+                { categoria: 'bebidas', nome: 'Refri 1L a partir:', preco: 10.00, img: 'refri1.jpg' },
+                { categoria: 'bebidas', nome: 'Refri 2L', preco: 15.00, img: 'refri2.jpg' },
                 { categoria: 'bebidas', nome: 'Agua sem gás', preco: 3.00, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400' },
                 { categoria: 'bebidas', nome: 'Agua com gás', preco: 4.00, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400' },
                 { categoria: 'bebidas', nome: 'Suco 300ml', preco: 8.00, img: 'suc.jpg' },
@@ -717,6 +717,22 @@ window.buscarProdutos = () => {
         : '<p style="color:gray; text-align:center; padding:20px; grid-column: 1/-1;">Nenhum produto encontrado...</p>';
 };
 
+// Preço especial de sabores no Refri 1 litro
+const PRECO_SABOR_1L = {
+    'Coca-Cola': 12.00,
+    'Coca-Cola Zero': 12.00
+};
+
+function ehRefri1L(prod) {
+    const n = (prod?.nome || '').toLowerCase();
+    return n.includes('refri') && (n.includes('1 litro') || n.includes('1l'));
+}
+
+function precoDoSabor(prod, sabor) {
+    if (ehRefri1L(prod) && PRECO_SABOR_1L[sabor] !== undefined) return PRECO_SABOR_1L[sabor];
+    return prod.preco;
+}
+
 window.abrirModal = (prod) => {
     itemSelecionado = prod;
     document.getElementById('modal-nome').innerText = prod.nome;
@@ -750,14 +766,18 @@ window.abrirModal = (prod) => {
                     <input type="radio" name="sabor-bebida" value="${f}" ${i === 0 ? 'checked' : ''}> ${f}
                 </label>
             `).join('');
-        } else if (nomeProd.includes('refrigerante')) {
+                } else if (nomeProd.includes('refrigerante')) {
             tituloSabores.innerText = "Escolha o sabor:";
             const refris = ["Coca-Cola", "Coca-Cola Zero", "Guaraná Antártica", "Fanta Laranja"];
-            opcoesHTML = refris.map((r, i) => `
+            opcoesHTML = refris.map((r, i) => {
+                const preco = precoDoSabor(prod, r);
+                const mostrarPreco = ehRefri1L(prod);
+                return `
                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                     <input type="radio" name="sabor-bebida" value="${r}" ${i === 0 ? 'checked' : ''}> ${r}
-                </label>
-            `).join('');
+                    ${mostrarPreco ? `<span style="margin-left:auto;color:var(--gold);font-weight:bold;">R$ ${preco.toFixed(2).replace('.', ',')}</span>` : ''}
+                </label>`;
+            }).join('');
         } else {
             bebidas.classList.add('hidden');
         }
@@ -784,9 +804,11 @@ window.confirmarAdicao = () => {
     let saborEscolhido = "";
 
     if (itemSelecionado.categoria === 'bebidas') {
-        const inputSabor = document.querySelector('input[name="sabor-bebida"]:checked');
+              const inputSabor = document.querySelector('input[name="sabor-bebida"]:checked');
         if (inputSabor) {
             saborEscolhido = inputSabor.value;
+            // Ajusta o preço conforme o sabor (ex.: Coca-Cola 1L = R$ 12,00)
+            valorExtras += precoDoSabor(itemSelecionado, saborEscolhido) - itemSelecionado.preco;
         }
     } else {
         document.querySelectorAll('.extra-row').forEach(row => {
@@ -1227,3 +1249,6 @@ document.addEventListener('contextmenu', function (event) { event.preventDefault
 </body>
 </html>
 
+
+
+        const inputSabor = document.querySelector('input[name="sabor-bebida"]:checked');
